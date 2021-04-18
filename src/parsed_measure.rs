@@ -12,11 +12,7 @@ pub enum Single {
 #[derive(Debug, PartialEq, Clone)]
 pub enum ParsedMeasure {
     Single(Single),
-    Group(Vec<ParsedMeasure>),
-    Polymetric {
-        elements: Vec<ParsedMeasure>,
-        length: u32,
-    },
+    Group(Vec<ParsedMeasure>)
 }
 
 impl ParsedMeasure {

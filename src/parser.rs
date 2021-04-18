@@ -81,13 +81,3 @@ pub fn parse(input: &str) -> Result<ParsedSequence, Error> {
         Err(_) => Err(Error::DSLParsingError),
     }
 }
-
-#[test]
-fn parse_correctly() {
-    let a = Measure::Group(vec![
-        Measure::note("0"),
-        Measure::note("1"),
-        Measure::Group(vec![Measure::note("2"), Measure::note("3")]),
-    ]);
-    assert_eq!(parser("0 1 [2 3]"), Ok(("", a)));
-}

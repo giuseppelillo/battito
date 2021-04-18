@@ -6,6 +6,7 @@ mod sequence;
 mod measure;
 mod parsed_measure;
 mod utils;
+mod parsed;
 
 use nannou_osc as osc;
 

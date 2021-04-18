@@ -1,11 +1,12 @@
 use crate::max::{MaxNote, Pattern, Payload};
 use crate::measure::Measure;
 use crate::parsed_measure::ParsedMeasure;
+use crate::parsed::Parsed;
 
 #[derive(Debug, PartialEq)]
 pub struct ParsedSequence {
     pub target: String,
-    pub measures: Vec<ParsedMeasure>,
+    pub measures: Vec<Parsed>,
 }
 
 #[derive(Debug, PartialEq)]

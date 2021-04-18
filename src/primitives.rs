@@ -15,7 +15,6 @@ impl Note {
     }
 }
 
-
 #[derive(Debug, PartialEq, Clone)]
 pub struct AlternateNote {
     pub notes: Vec<Note>,

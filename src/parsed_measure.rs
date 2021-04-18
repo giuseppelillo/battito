@@ -1,7 +1,7 @@
-use crate::primitives::{AlternateNote, Note};
 use crate::measure::Measure;
+use crate::primitives::{AlternateNote, Note};
 use crate::utils::lcm_vec;
-use crate::{VELOCITY_DEFAULT, DURATION_DEFAULT};
+use crate::{DURATION_DEFAULT, VELOCITY_DEFAULT};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Single {
@@ -9,39 +9,48 @@ pub enum Single {
     Alternate(AlternateNote),
 }
 
+/*pub struct Euclid {
+    n: Single,
+    m: Single,
+    r: Single,
+}*/
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct Polymetric {
+    pub elements: Vec<ParsedMeasure>,
+    pub length: u32,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum Parsed {
+    ParsedMeasure(ParsedMeasure),
+    Polymetric(Polymetric),
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum ParsedMeasure {
     Single(Single),
     Group(Vec<ParsedMeasure>),
-    Polymetric {
-        elements: Vec<ParsedMeasure>,
-        length: u32,
-    },
+}
+
+impl Parsed {
+    pub fn to_measures(&self) -> Vec<Measure> {
+        match self {
+            Parsed::ParsedMeasure(parsed_measure) => parsed_measure.to_measures(),
+            Parsed::Polymetric(polymetric) => polymetric.to_measures(),
+        }
+    }
 }
 
 impl ParsedMeasure {
-
     // Transform this parsed measure into a vector of Measure
     pub fn to_measures(&self) -> Vec<Measure> {
-        // expand polymetric
-        println!("before expand polymetric {:?}", self);
-        let expanded_polymetric = Self::expand_polymetric(self);
-        println!("after expand polymetric {:?}", expanded_polymetric);
-        // expand alternate
-        Self::expand_alternate(expanded_polymetric)
-    }
-    fn expand_alternate(parsed_measures: Vec<ParsedMeasure>) -> Vec<Measure> {
-        let mut out: Vec<Measure> = Vec::new();
-        for pms in parsed_measures {
-            let n = lcm_vec(pms.count_replications());
-            // Create n copies of this ParsedMeasure
-            let mut replicated: Vec<ParsedMeasure> = vec![pms.clone(); n as usize];
-            Self::expand(&mut replicated);
-            let expanded_alternate: Vec<Measure> =
-                replicated.iter().map(|p| Self::out(p.clone())).collect();
-            out.extend(expanded_alternate);
-        }
-        out
+        // Self::expand_alternate(vec![self.clone()])
+        let n = lcm_vec(self.count_replications());
+        // Create n copies of this ParsedMeasure
+        let mut replicated: Vec<ParsedMeasure> = vec![self.clone(); n as usize];
+        Self::expand_alternate(&mut replicated);
+        replicated.iter().map(|p| Self::out(p.clone())).collect()
     }
 
     fn count_replications(&self) -> Vec<u32> {
@@ -62,43 +71,18 @@ impl ParsedMeasure {
         }
     }
 
-    fn next(v: &Vec<ParsedMeasure>, i: usize) -> ParsedMeasure {
-        let index = i % v.len();
-        v.get(index).unwrap().clone()
-    }
-
-    fn expand_polymetric(&self) -> Vec<ParsedMeasure> {
-        match self {
-            ParsedMeasure::Polymetric { elements, length } => {
-                let mut out: Vec<ParsedMeasure> = Vec::with_capacity(elements.len());
-                let mut i: usize = 0;
-                for _ in 0..elements.len() {
-                    let mut internal: Vec<ParsedMeasure> = Vec::with_capacity(*length as usize);
-                    for _ in 0..*length {
-                        internal.push(Self::next(elements, i));
-                        i = i + 1;
-                    }
-                    out.push(ParsedMeasure::Group(internal));
-                }
-                out
-            }
-            _ => vec![self.clone()],
-        }
-    }
-
     fn out(parsed_measure: ParsedMeasure) -> Measure {
         match parsed_measure {
             Self::Single(Single::Note(n)) => Measure::Note(n.clone()),
             Self::Group(x) => {
-                let nested: Vec<Measure> =
-                    x.iter().map(|b| Self::out(b.clone())).collect();
+                let nested: Vec<Measure> = x.iter().map(|b| Self::out(b.clone())).collect();
                 Measure::Group(nested)
             }
             _ => panic!("Not expected"),
         }
     }
 
-    fn expand(replicated: &mut Vec<ParsedMeasure>) -> () {
+    fn expand_alternate(replicated: &mut Vec<ParsedMeasure>) -> () {
         // Remove Alternate, Polymetric
         let mut i: usize = 0;
         for pm in replicated {
@@ -118,10 +102,8 @@ impl ParsedMeasure {
                     Self::rec(a, iter);
                 }
             }
-            _ => (),
         }
     }
-
 
     // Constructors
     pub fn alternate(value: Vec<&str>) -> Self {
@@ -189,5 +171,86 @@ impl ParsedMeasure {
             velocity,
             duration,
         }))
+    }
+}
+
+impl Polymetric {
+    // Transform this parsed measure into a vector of Measure
+    pub fn to_measures(&self) -> Vec<Measure> {
+        let group = ParsedMeasure::Group(self.elements.clone());
+        let n = lcm_vec(group.count_replications());
+        // Create n copies of this ParsedMeasure
+        let mut replicated: Vec<ParsedMeasure> = vec![group; n as usize];
+        Self::expand_alternate(&mut replicated);
+        println!("replicated: {:?}", replicated);
+        let extracted_and_flattened: Vec<ParsedMeasure> = Self::extract_and_flatten(replicated);
+        println!("flattened: {:?}", extracted_and_flattened);
+        let expanded_polymetric: Vec<ParsedMeasure> = Self::expand_polymetric(&extracted_and_flattened, self.length);
+        expanded_polymetric.iter().map(|p| Self::out(p.clone())).collect()
+    }
+
+    // [Group(x,y,z), Group(a,b,c)] => [x,y,z,a,b,c]
+    fn extract_and_flatten(elements: Vec<ParsedMeasure>) -> Vec<ParsedMeasure> {
+        let mut out: Vec<ParsedMeasure> = Vec::new();
+        for i in elements {
+            match i {
+                ParsedMeasure::Single(_) => out.push(i),
+                ParsedMeasure::Group(x) => out.extend(x),
+            }
+        }
+        out
+    }
+
+    fn expand_alternate(replicated: &mut Vec<ParsedMeasure>) -> () {
+        // Remove Alternate
+        let mut i: usize = 0;
+        for pm in replicated {
+            Self::rec(pm, i);
+            i = i + 1;
+        }
+    }
+
+    fn rec(pm: &mut ParsedMeasure, iter: usize) -> () {
+        match pm {
+            ParsedMeasure::Single(Single::Note(_)) => (),
+            ParsedMeasure::Single(Single::Alternate(an)) => {
+                *pm = ParsedMeasure::Single(Single::Note(an.next(iter)))
+            }
+            ParsedMeasure::Group(x) => {
+                for a in x {
+                    Self::rec(a, iter);
+                }
+            }
+        }
+    }
+
+    fn expand_polymetric(elements: &Vec<ParsedMeasure>, length: u32) -> Vec<ParsedMeasure> {
+        let mut out: Vec<ParsedMeasure> = Vec::with_capacity(elements.len());
+        let mut i: usize = 0;
+        for _ in 0..elements.len() {
+            let mut internal: Vec<ParsedMeasure> = Vec::with_capacity(length as usize);
+            for _ in 0..length {
+                internal.push(Self::next(elements, i));
+                i = i + 1;
+            }
+            out.push(ParsedMeasure::Group(internal));
+        }
+        out
+    }
+
+    fn next(v: &Vec<ParsedMeasure>, i: usize) -> ParsedMeasure {
+        let index = i % v.len();
+        v.get(index).unwrap().clone()
+    }
+
+    fn out(parsed_measure: ParsedMeasure) -> Measure {
+        match parsed_measure {
+            ParsedMeasure::Single(Single::Note(n)) => Measure::Note(n.clone()),
+            ParsedMeasure::Group(x) => {
+                let nested: Vec<Measure> = x.iter().map(|b| Self::out(b.clone())).collect();
+                Measure::Group(nested)
+            }
+            _ => panic!("Not expected"),
+        }
     }
 }

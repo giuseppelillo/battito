@@ -1,10 +1,10 @@
 mod error;
 mod max;
+mod measure;
+mod parsed_measure;
 pub mod parser;
 mod primitives;
 mod sequence;
-mod measure;
-mod parsed_measure;
 mod utils;
 
 use nannou_osc as osc;

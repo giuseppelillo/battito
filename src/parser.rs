@@ -1,4 +1,5 @@
 use crate::error::Error;
+use crate::parsed_measure::{Parsed, ParsedMeasure, Polymetric};
 use crate::sequence::ParsedSequence;
 use nom::{
     branch::alt,
@@ -9,7 +10,6 @@ use nom::{
     sequence::{preceded, terminated, tuple},
     IResult,
 };
-use crate::parsed_measure::ParsedMeasure;
 
 fn parser_alternate(input: &str) -> IResult<&str, ParsedMeasure> {
     map(
@@ -40,29 +40,34 @@ fn parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
     )(input)
 }
 
-fn parser_polymetric(input: &str) -> IResult<&str, ParsedMeasure> {
+fn parser_polymetric(input: &str) -> IResult<&str, Parsed> {
     map(
         tuple((
-            preceded(char('{'), terminated(separated_list0(char(' '), parser_measure), char('}'))),
-            preceded(char('%'), digit1)
+            preceded(
+                char('{'),
+                terminated(separated_list0(char(' '), parser_measure), char('}')),
+            ),
+            preceded(char('%'), digit1),
         )),
-        |(elements, length)| ParsedMeasure::Polymetric { elements, length: length.parse().unwrap() },
+        |(elements, length)| {
+            Parsed::Polymetric(Polymetric {
+                elements,
+                length: length.parse().unwrap(),
+            })
+        },
     )(input)
 }
 
-fn parser_list(input: &str) -> IResult<&str, ParsedMeasure> {
-    alt((
-        parser_polymetric,
-        parser_group
-    ))(input)
+fn parser_list(input: &str) -> IResult<&str, Parsed> {
+    alt((parser_polymetric, map(parser_group, Parsed::ParsedMeasure)))(input)
 }
 
-fn parser_lists(input: &str) -> IResult<&str, Vec<ParsedMeasure>> {
+fn parser_lists(input: &str) -> IResult<&str, Vec<Parsed>> {
     separated_list0(tag(" | "), parser_list)(input)
 }
 
 fn inner_parser(input: &str) -> IResult<&str, ParsedMeasure> {
-    preceded(char('['), terminated(parser_list, char(']')))(input)
+    preceded(char('['), terminated(parser_group, char(']')))(input)
 }
 
 fn parser(input: &str) -> IResult<&str, ParsedSequence> {
@@ -80,14 +85,4 @@ pub fn parse(input: &str) -> Result<ParsedSequence, Error> {
         Ok(e) => Ok(e.1),
         Err(_) => Err(Error::DSLParsingError),
     }
-}
-
-#[test]
-fn parse_correctly() {
-    let a = Measure::Group(vec![
-        Measure::note("0"),
-        Measure::note("1"),
-        Measure::Group(vec![Measure::note("2"), Measure::note("3")]),
-    ]);
-    assert_eq!(parser("0 1 [2 3]"), Ok(("", a)));
 }

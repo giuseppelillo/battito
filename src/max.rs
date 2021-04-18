@@ -1,7 +1,7 @@
 use crate::error::Error;
+use crate::primitives::Note;
 use nannou_osc::rosc::OscMessage;
 use serde::Serialize;
-use crate::primitives::Note;
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct Payload {

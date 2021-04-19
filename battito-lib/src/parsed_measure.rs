@@ -1,12 +1,12 @@
 use crate::measure::Measure;
-use crate::primitives::{AlternateNote, Note};
+use crate::primitives::{Alternate, Note};
 use crate::utils::lcm_vec;
 use crate::{DURATION_DEFAULT, VELOCITY_DEFAULT};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Single {
     Note(Note),
-    Alternate(AlternateNote),
+    Alternate(Alternate),
 }
 
 /*pub struct Euclid {
@@ -61,7 +61,7 @@ impl ParsedMeasure {
 
     fn _count_replications(acc: &mut Vec<u32>, p: &ParsedMeasure) -> () {
         match p {
-            ParsedMeasure::Single(Single::Alternate(x)) => acc.push(x.notes.len() as u32),
+            ParsedMeasure::Single(Single::Alternate(x)) => acc.push(x.0.len() as u32),
             ParsedMeasure::Group(pms) => {
                 for i in pms {
                     Self::_count_replications(acc, i)
@@ -94,9 +94,7 @@ impl ParsedMeasure {
     fn rec(pm: &mut ParsedMeasure, iter: usize) -> () {
         match pm {
             ParsedMeasure::Single(Single::Note(_)) => (),
-            ParsedMeasure::Single(Single::Alternate(an)) => {
-                *pm = ParsedMeasure::Single(Single::Note(an.next(iter)))
-            }
+            ParsedMeasure::Single(Single::Alternate(an)) => *pm = an.next(iter).to_parsed_measure(),
             ParsedMeasure::Group(x) => {
                 for a in x {
                     Self::rec(a, iter);
@@ -107,22 +105,22 @@ impl ParsedMeasure {
 
     // Constructors
     pub fn alternate(value: Vec<&str>) -> Self {
-        let notes: Vec<Note> = value
+        let notes: Vec<ParsedMeasure> = value
             .iter()
             .map(|value| {
                 let (value_parsed, velocity, duration) = match *value {
                     "~" => ("0", 0, 0),
                     p => (p, VELOCITY_DEFAULT, DURATION_DEFAULT),
                 };
-                Note {
+                Self::Single(Single::Note(Note {
                     value: value_parsed.to_string(),
                     velocity,
                     duration,
-                }
+                }))
             })
             .collect();
 
-        Self::Single(Single::Alternate(AlternateNote { notes }))
+        Self::Single(Single::Alternate(Alternate::from_parsed_measures(&notes)))
     }
 
     pub fn note(value: &str) -> Self {
@@ -185,8 +183,12 @@ impl Polymetric {
         println!("replicated: {:?}", replicated);
         let extracted_and_flattened: Vec<ParsedMeasure> = Self::extract_and_flatten(replicated);
         println!("flattened: {:?}", extracted_and_flattened);
-        let expanded_polymetric: Vec<ParsedMeasure> = Self::expand_polymetric(&extracted_and_flattened, self.length);
-        expanded_polymetric.iter().map(|p| Self::out(p.clone())).collect()
+        let expanded_polymetric: Vec<ParsedMeasure> =
+            Self::expand_polymetric(&extracted_and_flattened, self.length);
+        expanded_polymetric
+            .iter()
+            .map(|p| Self::out(p.clone()))
+            .collect()
     }
 
     // [Group(x,y,z), Group(a,b,c)] => [x,y,z,a,b,c]
@@ -213,9 +215,7 @@ impl Polymetric {
     fn rec(pm: &mut ParsedMeasure, iter: usize) -> () {
         match pm {
             ParsedMeasure::Single(Single::Note(_)) => (),
-            ParsedMeasure::Single(Single::Alternate(an)) => {
-                *pm = ParsedMeasure::Single(Single::Note(an.next(iter)))
-            }
+            ParsedMeasure::Single(Single::Alternate(an)) => *pm = an.next(iter).to_parsed_measure(),
             ParsedMeasure::Group(x) => {
                 for a in x {
                     Self::rec(a, iter);

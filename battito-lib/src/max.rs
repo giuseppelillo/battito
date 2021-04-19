@@ -1,6 +1,4 @@
-use crate::error::Error;
 use crate::primitives::Note;
-use nannou_osc::rosc::OscMessage;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -9,15 +7,6 @@ pub struct Payload {
     pub steps: String,
     pub length: u32,
     pub subdivision: u32,
-}
-
-impl Payload {
-    pub fn to_osc_message(&self) -> Result<OscMessage, Error> {
-        Ok(OscMessage {
-            addr: serde_json::to_string(&self)?,
-            args: None,
-        })
-    }
 }
 
 pub struct MaxNote {

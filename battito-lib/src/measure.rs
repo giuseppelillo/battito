@@ -1,7 +1,7 @@
-use crate::max::{Pattern, MaxNote};
+use crate::max::{MaxNote, Pattern};
 use crate::measure::Measure::Group;
-use crate::utils::lcm;
 use crate::primitives::Note;
+use crate::utils::lcm;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Measure {
@@ -63,4 +63,3 @@ impl Measure {
         })
     }
 }
-

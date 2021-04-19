@@ -1,18 +1,16 @@
 use nannou_osc::CommunicationError;
 use std::io;
-use std::num::ParseIntError;
 
 #[derive(Debug)]
 pub enum Error {
-    NoteParsingError,
-    DSLParsingError,
     InputError,
     UDPError,
+    ParsingError,
 }
 
 impl From<io::Error> for Error {
     fn from(_: io::Error) -> Self {
-        Error::DSLParsingError
+        Error::InputError
     }
 }
 
@@ -22,14 +20,14 @@ impl From<CommunicationError> for Error {
     }
 }
 
-impl From<serde_json::Error> for Error {
-    fn from(_: serde_json::Error) -> Self {
-        Error::DSLParsingError
+impl From<battito_lib::error::Error> for Error {
+    fn from(_: battito_lib::error::Error) -> Self {
+        Error::ParsingError
     }
 }
 
-impl From<ParseIntError> for Error {
-    fn from(_: ParseIntError) -> Self {
-        Error::NoteParsingError
+impl From<serde_json::Error> for Error {
+    fn from(_: serde_json::Error) -> Self {
+        Error::InputError
     }
 }

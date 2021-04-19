@@ -7,11 +7,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b62fc65de8e4e7f52534fb52b0f3ed04746ae267519eef2a83941e8085068b"
 
 [[package]]
-name = "battito"
+name = "battito-app"
+version = "0.1.0"
+dependencies = [
+ "battito-lib",
+ "nannou_osc",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "battito-lib"
 version = "0.1.0"
 dependencies = [
  "gcd",
- "nannou_osc",
  "nom",
  "serde",
  "serde_json",

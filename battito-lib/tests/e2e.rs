@@ -39,6 +39,41 @@ fn alternate() {
         }
     );
     assert_eq!(expected, out);
+
+    let out = interpret("a > 1 <2,4> <3,6>");
+    let expected = Ok(
+        Payload {
+            target: "a".to_string(),
+            steps: "1 1 100 100, 641 2 100 100, 1281 3 100 100, 1921 1 100 100, 2561 4 100 100, 3201 6 100 100".to_string(),
+            length: 2,
+            subdivision: 1920
+        }
+    );
+    assert_eq!(expected, out);
+
+    // 1 3 | 2 3 | 1 4 | 2 4
+    let out = interpret("a > <1,2> <3,3,4,4>");
+    let expected = Ok(
+        Payload {
+            target: "a".to_string(),
+            steps: "1 1 100 100, 961 3 100 100, 1921 2 100 100, 2881 3 100 100, 3841 1 100 100, 4801 4 100 100, 5761 2 100 100, 6721 4 100 100".to_string(),
+            length: 4,
+            subdivision: 1920
+        }
+    );
+    assert_eq!(expected, out);
+
+    // 1 3 | 1 4 | 2 3 | 2 4
+    let out = interpret("a > <1,1,2,2> <3,4>");
+    let expected = Ok(
+        Payload {
+            target: "a".to_string(),
+            steps: "1 1 100 100, 961 3 100 100, 1921 1 100 100, 2881 4 100 100, 3841 2 100 100, 4801 3 100 100, 5761 2 100 100, 6721 4 100 100".to_string(),
+            length: 4,
+            subdivision: 1920
+        }
+    );
+    assert_eq!(expected, out);
 }
 
 #[test]

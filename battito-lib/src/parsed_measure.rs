@@ -47,7 +47,7 @@ impl ParsedMeasure {
     // Transform this parsed measure into a vector of Measure
     pub fn to_measures(&self) -> Vec<Measure> {
         // Self::expand_alternate(vec![self.clone()])
-        let n = lcm_vec(self.count_replications());
+        let n = lcm_vec(&self.count_replications());
         // Create n copies of this ParsedMeasure
         let mut replicated: Vec<ParsedMeasure> = vec![self.clone(); n as usize];
         Self::expand_alternate(&mut replicated);
@@ -87,18 +87,18 @@ impl ParsedMeasure {
         // Remove Alternate, Polymetric
         let mut i: usize = 0;
         for pm in replicated {
-            Self::rec(pm, i);
+            Self::expand_rec(pm, i);
             i = i + 1;
         }
     }
 
-    fn rec(pm: &mut ParsedMeasure, iter: usize) -> () {
+    fn expand_rec(pm: &mut ParsedMeasure, iter: usize) -> () {
         match pm {
             ParsedMeasure::Single(Single::Note(_)) => (),
             ParsedMeasure::Single(Single::Alternate(an)) => *pm = an.next(iter).to_parsed_measure(),
             ParsedMeasure::Group(x) => {
                 for a in x {
-                    Self::rec(a, iter);
+                    Self::expand_rec(a, iter);
                 }
             }
         }
@@ -177,7 +177,7 @@ impl Polymetric {
     // Transform this parsed measure into a vector of Measure
     pub fn to_measures(&self) -> Vec<Measure> {
         let group = ParsedMeasure::Group(self.elements.clone());
-        let n = lcm_vec(group.count_replications());
+        let n = lcm_vec(&group.count_replications());
         // Create n copies of this ParsedMeasure
         let mut replicated: Vec<ParsedMeasure> = vec![group; n as usize];
         Self::expand_alternate(&mut replicated);

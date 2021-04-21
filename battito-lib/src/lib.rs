@@ -1,4 +1,5 @@
 pub mod error;
+mod euclidian;
 pub mod interpreter;
 pub mod max;
 mod measure;

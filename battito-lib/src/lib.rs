@@ -1,5 +1,5 @@
 pub mod error;
-mod euclidian;
+mod euclidean;
 pub mod interpreter;
 pub mod max;
 mod measure;
@@ -9,6 +9,7 @@ mod parser_alternate;
 mod primitives;
 mod sequence;
 mod utils;
+mod parser_euclidean;
 
 pub(crate) const VELOCITY_DEFAULT: u32 = 100;
 pub(crate) const DURATION_DEFAULT: u32 = 100;

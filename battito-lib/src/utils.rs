@@ -1,5 +1,4 @@
 use gcd::Gcd;
-use std::io::IntoInnerError;
 
 pub fn lcm_vec<'a, I>(v: I) -> u32
 where

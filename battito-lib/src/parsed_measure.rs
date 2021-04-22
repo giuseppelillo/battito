@@ -2,7 +2,6 @@ use crate::measure::Measure;
 use crate::primitives::{Alternate, Note};
 use crate::utils::lcm_vec;
 use crate::{DURATION_DEFAULT, VELOCITY_DEFAULT};
-use core::cmp;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Single {
@@ -10,11 +9,15 @@ pub enum Single {
     Alternate(Alternate),
 }
 
-/*pub struct Euclid {
-    n: Single,
-    m: Single,
-    r: Single,
-}*/
+impl Single {
+    pub fn empty() -> Self {
+        Single::Note(Note {
+            value: "0".to_string(),
+            velocity: 0,
+            duration: 0,
+        })
+    }
+}
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Polymetric {

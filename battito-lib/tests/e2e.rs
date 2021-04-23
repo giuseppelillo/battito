@@ -291,3 +291,21 @@ fn euclidean_paper() {
     // let expected = interpret("a > b ~ b b ~ b b");
     // assert_eq!(expected, out);
 }
+
+#[test]
+fn repeated() {
+    let out = interpret("a > b*2");
+    let expected = interpret("a > b b");
+    assert_eq!(expected, out);
+    let out = interpret("a > b*2 s");
+    let expected = interpret("a > [b b] s");
+    assert_eq!(expected, out);
+    let out = interpret("a > [b [s h [h s] b]]*2 s");
+    let expected = interpret("a > [[b [s h [h s] b]] [b [s h [h s] b]]] s");
+    assert_eq!(expected, out);
+    let out = interpret("a > <b,h>*2 s");
+    let expected = interpret("a > [<b,h> <b,h>] s");
+    assert_eq!(expected, out);
+    let expected2 = interpret("a > [b b] s | [h h] s");
+    assert_eq!(expected2, out);
+}

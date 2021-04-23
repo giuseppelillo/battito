@@ -43,7 +43,10 @@ impl Info {
     }
 }
 
-async fn parse(info: web::Json<Info>, data: web::Data<AppState>) -> Result<HttpResponse, ServiceError> {
+async fn parse(
+    info: web::Json<Info>,
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, ServiceError> {
     let payload = interpret(&info.0.to_parser())?;
     let packet = to_osc_message(&payload)?;
     println!("{}", packet.addr);
@@ -56,10 +59,8 @@ async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-
     HttpServer::new(|| {
         let config = Config {
             host: "127.0.0.1".to_string(),

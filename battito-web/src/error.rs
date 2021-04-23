@@ -1,8 +1,7 @@
-use nannou_osc::CommunicationError;
-use std::io;
 use actix_web::error;
 use derive_more::{Display, Error};
-
+use nannou_osc::CommunicationError;
+use std::io;
 
 #[derive(Debug, Display, Error)]
 #[display(fmt = "Error!")]

@@ -8,6 +8,7 @@ use nom::combinator::{map, map_res};
 use nom::multi::separated_list1;
 use nom::sequence::{preceded, terminated, tuple};
 use nom::IResult;
+use crate::error::Error;
 
 pub fn parser_euclidean(input: &str) -> IResult<&str, Euclidean> {
     map_res(tuple((parser_value, parser_numbers)), |value| {
@@ -64,9 +65,9 @@ fn parser_euclidean_primitive(input: &str) -> IResult<&str, EuclideanPrimitive> 
 }
 
 fn parser_euclidean_primitive_single(input: &str) -> IResult<&str, EuclideanPrimitive> {
-    map(digit1, |x: &str| {
-        let value: u32 = x.parse().unwrap();
-        EuclideanPrimitive::Single(value)
+    map_res(digit1, |x: &str| -> Result<EuclideanPrimitive, Error>{
+        let value: Result<u32, Error> = x.parse().map_err(Error::from);
+        Ok(EuclideanPrimitive::Single(value?))
     })(input)
 }
 

@@ -1,13 +1,13 @@
 use crate::error::EuclideanError::{NGreaterThanM, RGreaterEqualThanM};
 use crate::error::{Error, ParsingError};
-use crate::parsed_measure::{Single, ParsedMeasure};
+use crate::expansion::Expansion;
+use crate::parsed_measure::{ParsedMeasure, Single};
+use crate::parser_euclidean::parser_euclidean;
 use crate::primitives::Alternate;
 use crate::primitives::{Note, PrimitiveGroup};
 use crate::utils::lcm_vec;
-use std::collections::VecDeque;
-use crate::expansion::Expansion;
 use nom::IResult;
-use crate::parser_euclidean::parser_euclidean;
+use std::collections::VecDeque;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum EuclideanPrimitive {

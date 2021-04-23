@@ -218,56 +218,29 @@ fn polymetric_alternate() {
     assert_eq!(expected, out);
 }
 
-/*
 #[test]
-fn euclidian() {
-    // [b ~ ~ b ~ ~ b ~] h
+fn euclidean() {
     let out = interpret("a > b(3,8,0) h");
-    let expected = Ok(
-        Payload {
-            target: "a".to_string(),
-            steps: "1 1 100 100, 385 2 100 100, 769 3 100 100, 1153 4 100 100, 1537 1 100 100".to_string(),
-            length: 1,
-            subdivision: 1920
-        }
-    );
+    let expected = interpret("a > [b ~ ~ b ~ ~ b ~] h");
     assert_eq!(expected, out);
 
-    // [~ b ~ ~ b ~ ~ b] h
     let out = interpret("a > b(3,8,1) h");
-    let expected = Ok(
-        Payload {
-            target: "a".to_string(),
-            steps: "1 1 100 100, 385 2 100 100, 769 3 100 100, 1153 4 100 100, 1537 1 100 100".to_string(),
-            length: 1,
-            subdivision: 1920
-        }
-    );
+    let expected = interpret("a > [~ b ~ ~ b ~ ~ b] h");
     assert_eq!(expected, out);
 
-    // [b ~ b ~] | [[h s] ~ [h s] ~]
-    let out = interpret("a > <b,[h s]>(2,4) h");
-    let expected = Ok(
-        Payload {
-            target: "a".to_string(),
-            steps: "1 1 100 100, 385 2 100 100, 769 3 100 100, 1153 4 100 100, 1537 1 100 100".to_string(),
-            length: 2,
-            subdivision: 1920
-        }
-    );
+    let out = interpret("a > [s [h b(3,8,1)]] h");
+    let expected = interpret("a > [s [h [~ b ~ ~ b ~ ~ b]]] h");
     assert_eq!(expected, out);
 
-
-    // [b ~ ~ b ~ ~ b ~] h | [b ~ b ~ b ~ b ~] h
     let out = interpret("a > b(<3,4>,8,0) h");
-    let expected = Ok(
-        Payload {
-            target: "a".to_string(),
-            steps: "1 1 100 100, 385 2 100 100, 769 3 100 100, 1153 4 100 100, 1537 1 100 100".to_string(),
-            length: 2,
-            subdivision: 1920
-        }
-    );
+    let expected = interpret("a > [b ~ ~ b ~ ~ b ~] h | [b ~ b ~ b ~ b ~] h");
+    assert_eq!(expected, out);
+
+    let out = interpret("a > [s [h b(<3,4>,8,0)]] h");
+    let expected = interpret("a > [s [h [b ~ ~ b ~ ~ b ~]]] h | [s [h [b ~ b ~ b ~ b ~]]] h");
+    assert_eq!(expected, out);
+
+    let out = interpret("a > b(<1,2,4>,<4,8>,<0,1>) h");
+    let expected = interpret("a > [b ~ ~ ~] h | [~ b ~ ~ ~ b ~ ~] h | [b b b b] h | [~ b ~ ~ ~ ~ ~ ~] h | [b ~ b ~] h | [~ b ~ b ~ b ~ b] h");
     assert_eq!(expected, out);
 }
-*/

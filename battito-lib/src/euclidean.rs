@@ -80,11 +80,19 @@ impl Euclidean {
             remainders.push(divisor % remainders[level as usize]);
             divisor = remainders[level as usize];
             level = level + 1;
-            if remainders[level as usize] <= 1 { break; }
+            if remainders[level as usize] <= 1 {
+                break;
+            }
         }
         counts.push(divisor);
 
-        fn build(euclidean: &Euclidean, level: isize, counts: &Vec<u32>, pattern: &mut Vec<PrimitiveGroup>, remainders: &Vec<u32>) -> () {
+        fn build(
+            euclidean: &Euclidean,
+            level: isize,
+            counts: &Vec<u32>,
+            pattern: &mut Vec<PrimitiveGroup>,
+            remainders: &Vec<u32>,
+        ) -> () {
             match level {
                 -1 => pattern.push(PrimitiveGroup::Single(Note::empty())),
                 -2 => pattern.push(euclidean.value.clone()),
@@ -100,7 +108,10 @@ impl Euclidean {
         }
 
         build(self, level, &counts, &mut pattern, &remainders);
-        let index_first_one = pattern.iter().position(|x| *x != PrimitiveGroup::Single(Note::empty())).unwrap();
+        let index_first_one = pattern
+            .iter()
+            .position(|x| *x != PrimitiveGroup::Single(Note::empty()))
+            .unwrap();
 
         pattern.rotate_left(index_first_one);
         if steps - pulses == 1 {
@@ -426,8 +437,23 @@ mod tests {
     #[test]
     fn transformation_nested() {
         let value = PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Group(vec![PrimitiveGroup::Single(Note { value: "a".to_string(), velocity: 120, duration: 114, }), PrimitiveGroup::Single(Note { value: "ll".to_string(), velocity: 59, duration: 63, })]),
-            PrimitiveGroup::Single(Note { value: "b".to_string(), velocity: 100, duration: 100, }),
+            PrimitiveGroup::Group(vec![
+                PrimitiveGroup::Single(Note {
+                    value: "a".to_string(),
+                    velocity: 120,
+                    duration: 114,
+                }),
+                PrimitiveGroup::Single(Note {
+                    value: "ll".to_string(),
+                    velocity: 59,
+                    duration: 63,
+                }),
+            ]),
+            PrimitiveGroup::Single(Note {
+                value: "b".to_string(),
+                velocity: 100,
+                duration: 100,
+            }),
         ]);
         let e = Euclidean {
             value: value.clone(),
@@ -576,5 +602,4 @@ mod tests {
         ]));
         assert_eq!(expected, e.to_primitive_group());
     }
-
 }

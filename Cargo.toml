@@ -1,5 +1,6 @@
 [workspace]
 members = [
-    "battito-app",
     "battito-lib",
+    "battito-app",
+    "battito-web",
 ]

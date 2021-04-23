@@ -101,32 +101,15 @@ impl Euclidean {
 
         build(self, level, &counts, &mut pattern, &remainders);
         let index_first_one = pattern.iter().position(|x| *x != PrimitiveGroup::Single(Note::empty())).unwrap();
+
         pattern.rotate_left(index_first_one);
+        if steps - pulses == 1 {
+            pattern.rotate_right(2);
+        }
 
         pattern.rotate_right(r);
         Ok(PrimitiveGroup::Group(pattern))
     }
-
-    // b(1,4,0) -> [b ~ ~ ~]; b(3,8,1) -> [~ b ~ ~ b ~ ~ b]
-    // b(3,8,0) -> [b ~ ~ b ~ ~ b ~]
-/*    fn to_primitive_group(&self) -> Result<PrimitiveGroup, Error> {
-        // here each EuclideanPrimitive should be Single
-        let m = *self.m.get_value()?;
-        let n = *self.n.get_value()?;
-        let r = *self.r.get_value()? as usize;
-        let space = (m as f32 / n as f32).ceil() as u32; //b(3,8,0) -> space = 3
-        let mut buf: VecDeque<PrimitiveGroup> = VecDeque::with_capacity(m as usize);
-        for i in 0..m {
-            let value = if i % space == 0 {
-                self.value.clone()
-            } else {
-                PrimitiveGroup::Single(Note::empty())
-            };
-            buf.push_back(value);
-        }
-        buf.rotate_right(r);
-        Ok(PrimitiveGroup::Group(Vec::from(buf)))
-    }*/
 
     fn count_replications(&self) -> [u32; 3] {
         [
@@ -402,39 +385,39 @@ mod tests {
                 duration: 100,
             }),
             PrimitiveGroup::Single(Note {
-                value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
-            }),
-            PrimitiveGroup::Single(Note {
-                value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
-            }),
-            PrimitiveGroup::Single(Note {
-                value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
-            }),
-            PrimitiveGroup::Single(Note {
-                value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
-            }),
-            PrimitiveGroup::Single(Note {
-                value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
-            }),
-            PrimitiveGroup::Single(Note {
-                value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
-            }),
-            PrimitiveGroup::Single(Note {
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
+            }),
+            PrimitiveGroup::Single(Note {
+                value: "x".to_string(),
+                velocity: 100,
+                duration: 100,
+            }),
+            PrimitiveGroup::Single(Note {
+                value: "x".to_string(),
+                velocity: 100,
+                duration: 100,
+            }),
+            PrimitiveGroup::Single(Note {
+                value: "x".to_string(),
+                velocity: 100,
+                duration: 100,
+            }),
+            PrimitiveGroup::Single(Note {
+                value: "x".to_string(),
+                velocity: 100,
+                duration: 100,
+            }),
+            PrimitiveGroup::Single(Note {
+                value: "x".to_string(),
+                velocity: 100,
+                duration: 100,
+            }),
+            PrimitiveGroup::Single(Note {
+                value: "x".to_string(),
+                velocity: 100,
+                duration: 100,
             }),
         ]));
         assert_eq!(expected, e.to_primitive_group());

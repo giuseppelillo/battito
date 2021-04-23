@@ -244,3 +244,50 @@ fn euclidean() {
     let expected = interpret("a > [b ~ ~ ~] h | [~ b ~ ~ ~ b ~ ~] h | [b b b b] h | [~ b ~ ~ ~ ~ ~ ~] h | [b ~ b ~] h | [~ b ~ b ~ b ~ b] h");
     assert_eq!(expected, out);
 }
+
+#[test]
+fn euclidean_paper() {
+    let out = interpret("a > b(1,2)");
+    let expected = interpret("a > b ~");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(1,3)");
+    let expected = interpret("a > b ~ ~");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(1,4)");
+    let expected = interpret("a > b ~ ~ ~");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(4,12)");
+    let expected = interpret("a > b ~ ~ b ~ ~ b ~ ~ b ~ ~ ");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(2,3)");
+    let expected = interpret("a > b ~ b");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(2,5)");
+    let expected = interpret("a > b ~ b ~ ~");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(3,4)");
+    let expected = interpret("a > b ~ b b");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(3,5)");
+    let expected = interpret("a > b ~ b ~ b");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(3,7)");
+    let expected = interpret("a > b ~ b ~ b ~ ~");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(4,7)");
+    let expected = interpret("a > b ~ b ~ b ~ b");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(4,9)");
+    let expected = interpret("a > b ~ b ~ b ~ b ~ ~");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(4,11)");
+    let expected = interpret("a > b ~ ~ b ~ ~ b ~ ~ b ~");
+    assert_eq!(expected, out);
+    let out = interpret("a > b(5,6)");
+    let expected = interpret("a > b ~ b b b b");
+    assert_eq!(expected, out);
+    // this is broken
+    // let out = interpret("a > b(5,7)");
+    // let expected = interpret("a > b ~ b b ~ b b");
+    // assert_eq!(expected, out);
+}

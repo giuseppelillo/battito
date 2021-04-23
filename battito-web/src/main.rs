@@ -1,7 +1,7 @@
 mod error;
 
 use crate::error::ServiceError;
-use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use battito_lib::interpreter::interpret;
 use battito_lib::max::Payload;
 use nannou_osc as osc;

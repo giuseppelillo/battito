@@ -10,6 +10,7 @@ mod parser_euclidean;
 mod primitives;
 mod sequence;
 mod utils;
+mod expansion;
 
 pub(crate) const VELOCITY_DEFAULT: u32 = 100;
 pub(crate) const DURATION_DEFAULT: u32 = 100;

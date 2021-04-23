@@ -9,13 +9,6 @@ use nom::multi::separated_list1;
 use nom::sequence::{preceded, terminated, tuple};
 use nom::IResult;
 
-pub fn parser_euclidean_parsed_measure(input: &str) -> IResult<&str, ParsedMeasure> {
-    map(parser_euclidean, |e| {
-        let single = e.to_single_pattern().unwrap(); // TODO: use result
-        ParsedMeasure::Single(single)
-    })(input)
-}
-
 pub fn parser_euclidean(input: &str) -> IResult<&str, Euclidean> {
     map_res(tuple((parser_value, parser_numbers)), |value| {
         Euclidean::create(value.0, value.1 .0, value.1 .1, value.1 .2)

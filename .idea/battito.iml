@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/battito-app/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/battito-lib/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/battito-lib/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/battito-web/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

@@ -15,6 +15,14 @@ impl Note {
         }
         i
     }
+
+    pub fn empty() -> Self {
+        Note {
+            value: "0".to_string(),
+            velocity: 0,
+            duration: 0,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]

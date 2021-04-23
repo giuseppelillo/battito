@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::error::{Error, ParsingError};
 use crate::parsed_measure::{Parsed, ParsedMeasure, Polymetric};
 use crate::parser_alternate::parser_alternate;
 use crate::sequence::ParsedSequence;
@@ -11,6 +11,7 @@ use nom::{
     sequence::{preceded, terminated, tuple},
     IResult,
 };
+use crate::parser_euclidean::parser_euclidean_parsed_measure;
 
 pub fn parser_note(input: &str) -> IResult<&str, ParsedMeasure> {
     map(alt((alphanumeric1, tag("~"))), ParsedMeasure::note)(input)
@@ -21,7 +22,7 @@ pub fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {
 }
 
 pub fn parser_parsed_measure(input: &str) -> IResult<&str, ParsedMeasure> {
-    alt((inner_parser_group, parser_single))(input)
+    alt((parser_euclidean_parsed_measure, inner_parser_group, parser_single))(input)
 }
 
 pub fn parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
@@ -74,6 +75,6 @@ pub fn parser(input: &str) -> IResult<&str, ParsedSequence> {
 pub fn parse(input: &str) -> Result<ParsedSequence, Error> {
     match parser(input) {
         Ok(e) => Ok(e.1),
-        Err(_) => Err(Error::DSLParsingError),
+        Err(_) => Err(Error::DSLParsingError(ParsingError::Generic)),
     }
 }

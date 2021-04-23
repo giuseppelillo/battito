@@ -13,7 +13,7 @@ pub fn parser_alternate(input: &str) -> IResult<&str, ParsedMeasure> {
     map(
         preceded(
             char('<'),
-            terminated(separated_list1(char(','), parser_asd), char('>')),
+            terminated(separated_list1(char(','), parser_primitive), char('>')),
         ),
         |primitives| ParsedMeasure::Single(Single::Alternate(Alternate(primitives))),
     )(input)
@@ -28,11 +28,11 @@ fn parser_primitive_group(input: &str) -> IResult<&str, PrimitiveGroup> {
 }
 
 pub fn parser_group_inner(input: &str) -> IResult<&str, PrimitiveGroup> {
-    map(separated_list0(char(' '), parser_asd), |x| {
+    map(separated_list0(char(' '), parser_primitive), |x| {
         PrimitiveGroup::Group(x)
     })(input)
 }
 
-pub fn parser_asd(input: &str) -> IResult<&str, PrimitiveGroup> {
+pub fn parser_primitive(input: &str) -> IResult<&str, PrimitiveGroup> {
     alt((parser_primitive_group, parser_primitive_note))(input)
 }

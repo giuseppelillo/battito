@@ -5,6 +5,7 @@ pub struct Event {
     pub value: String,
     pub velocity: u32,
     pub duration: u32,
+    pub probability: u32, // [0, 100]
 }
 
 impl Event {
@@ -21,6 +22,7 @@ impl Event {
             value: "0".to_string(),
             velocity: 0,
             duration: 0,
+            probability: 0,
         }
     }
 }

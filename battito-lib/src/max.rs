@@ -17,8 +17,8 @@ pub struct MaxEvent {
 impl MaxEvent {
     pub fn display(&self) -> String {
         format!(
-            "{} {} {} {}",
-            self.index, self.event.value, self.event.velocity, self.event.duration
+            "{} {} {} {} {}",
+            self.index, self.event.value, self.event.velocity, self.event.duration, self.event.probability
         )
     }
 }

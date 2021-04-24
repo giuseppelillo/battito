@@ -15,6 +15,7 @@ impl Single {
             value: "0".to_string(),
             velocity: 0,
             duration: 0,
+            probability: 0,
         })
     }
 }
@@ -108,18 +109,19 @@ impl ParsedMeasure {
     }
 
     // Constructors
-    pub fn alternate(value: Vec<&str>) -> Self {
+    pub fn alternate(value: Vec<(&str, Option<u32>)>) -> Self {
         let events: Vec<ParsedMeasure> = value
             .iter()
             .map(|value| {
-                let (value_parsed, velocity, duration) = match *value {
-                    "~" => ("0", 0, 0),
-                    p => (p, VELOCITY_DEFAULT, DURATION_DEFAULT),
+                let (value_parsed, velocity, duration, probability) = match *value {
+                    ("~", _) => ("0", 0, 0, Some(0)),
+                    (v, p) => (v, VELOCITY_DEFAULT, DURATION_DEFAULT, p),
                 };
                 Self::Single(Single::Event(Event {
                     value: value_parsed.to_string(),
                     velocity,
                     duration,
+                    probability: probability.unwrap_or(100),
                 }))
             })
             .collect();
@@ -128,50 +130,28 @@ impl ParsedMeasure {
     }
 
     pub fn event(value: &str) -> Self {
-        let (value_parsed, velocity, duration) = match value {
-            "~" => ("0", 0, 0),
-            p => (p, VELOCITY_DEFAULT, DURATION_DEFAULT),
+        let (value_parsed, velocity, duration, probability) = match value {
+            "~" => ("0", 0, 0, 0),
+            p => (p, VELOCITY_DEFAULT, DURATION_DEFAULT, 100),
         };
         Self::Single(Single::Event(Event {
             value: value_parsed.to_string(),
             velocity,
             duration,
+            probability,
         }))
     }
 
-    pub fn event_value_velocity(value: &str, velocity: u32) -> Self {
-        let value_parsed = match value {
-            "~" => "0",
-            p => p,
-        };
-        Self::Single(Single::Event(Event {
-            value: value_parsed.to_string(),
-            velocity,
-            duration: DURATION_DEFAULT,
-        }))
-    }
-
-    pub fn event_value_duration(value: &str, duration: u32) -> Self {
-        let value_parsed = match value {
-            "~" => "0",
-            p => p,
-        };
-        Self::Single(Single::Event(Event {
-            value: value_parsed.to_string(),
-            velocity: VELOCITY_DEFAULT,
-            duration,
-        }))
-    }
-
-    pub fn event_value_velocity_duration(value: &str, velocity: u32, duration: u32) -> Self {
-        let value_parsed = match value {
-            "~" => "0",
-            p => p,
+    pub fn event_with_probability(value: &str, probability: u32) -> Self {
+        let (value_parsed, velocity, duration, prob) = match value {
+            "~" => ("0", 0, 0, 0),
+            p => (p, VELOCITY_DEFAULT, DURATION_DEFAULT, probability),
         };
         Self::Single(Single::Event(Event {
             value: value_parsed.to_string(),
             velocity,
             duration,
+            probability: prob,
         }))
     }
 }

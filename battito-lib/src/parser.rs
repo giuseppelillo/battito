@@ -4,7 +4,9 @@ use crate::expansion::Expansion;
 use crate::parsed_measure::{Parsed, ParsedMeasure, Polymetric};
 use crate::parser_alternate::parser_alternate;
 use crate::repeated::Repeated;
+use crate::replicated::Replicated;
 use crate::sequence::ParsedSequence;
+use nom::combinator::map_res;
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -14,10 +16,23 @@ use nom::{
     sequence::{preceded, terminated, tuple},
     IResult,
 };
-use crate::replicated::Replicated;
+
+pub fn parser_event_with_prob(input: &str) -> IResult<&str, ParsedMeasure> {
+    map_res(
+        tuple((alphanumeric1, preceded(char('?'), digit1))),
+        |(value, prob): (&str, &str)| -> Result<ParsedMeasure, Error> {
+            let prob_num: Result<u32, Error> = prob.parse().map_err(Error::from);
+            Ok(ParsedMeasure::event_with_probability(value, prob_num?))
+        },
+    )(input)
+}
+
+pub fn parser_event_no_prob(input: &str) -> IResult<&str, ParsedMeasure> {
+    map(alt((alphanumeric1, tag("~"))), ParsedMeasure::event)(input)
+}
 
 pub fn parser_event(input: &str) -> IResult<&str, ParsedMeasure> {
-    map(alt((alphanumeric1, tag("~"))), ParsedMeasure::event)(input)
+    alt((parser_event_with_prob, parser_event_no_prob))(input)
 }
 
 pub fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {

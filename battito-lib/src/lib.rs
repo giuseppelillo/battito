@@ -10,6 +10,7 @@ mod parser_alternate;
 mod parser_euclidean;
 mod primitives;
 mod repeated;
+mod replicated;
 mod sequence;
 mod utils;
 

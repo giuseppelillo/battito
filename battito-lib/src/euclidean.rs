@@ -176,9 +176,9 @@ impl Euclidean {
 }
 
 impl Expansion for Euclidean {
-    fn expand(&self) -> Result<ParsedMeasure, Error> {
+    fn expand(&self) -> Result<Vec<ParsedMeasure>, Error> {
         let single = self.to_single_pattern()?;
-        Ok(ParsedMeasure::Single(single))
+        Ok(vec![ParsedMeasure::Single(single)])
     }
 
     fn parser(input: &str) -> IResult<&str, Self> {

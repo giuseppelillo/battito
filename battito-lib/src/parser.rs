@@ -3,6 +3,7 @@ use crate::euclidean::Euclidean;
 use crate::expansion::Expansion;
 use crate::parsed_measure::{Parsed, ParsedMeasure, Polymetric};
 use crate::parser_alternate::parser_alternate;
+use crate::repeated::Repeated;
 use crate::sequence::ParsedSequence;
 use nom::{
     branch::alt,
@@ -13,7 +14,7 @@ use nom::{
     sequence::{preceded, terminated, tuple},
     IResult,
 };
-use crate::repeated::Repeated;
+use crate::replicated::Replicated;
 
 pub fn parser_note(input: &str) -> IResult<&str, ParsedMeasure> {
     map(alt((alphanumeric1, tag("~"))), ParsedMeasure::note)(input)
@@ -23,15 +24,20 @@ pub fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {
     alt((parser_note, parser_alternate))(input)
 }
 
-pub fn parser_parsed_measure(input: &str) -> IResult<&str, ParsedMeasure> {
-    alt((Euclidean::parse, Repeated::parse, inner_parser_group, parser_single))(input)
+pub fn parser_parsed_measure(input: &str) -> IResult<&str, Vec<ParsedMeasure>> {
+    alt((
+        Repeated::parse,
+        Replicated::parse,
+        Euclidean::parse,
+        map(inner_parser_group, |x| vec![x]),
+        map(parser_single, |x| vec![x]),
+    ))(input)
 }
 
 pub fn parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
-    map(
-        separated_list0(char(' '), parser_parsed_measure),
-        ParsedMeasure::Group,
-    )(input)
+    map(separated_list0(char(' '), parser_parsed_measure), |v| {
+        ParsedMeasure::Group(v.concat())
+    })(input)
 }
 
 pub fn parser_polymetric(input: &str) -> IResult<&str, Parsed> {
@@ -45,7 +51,7 @@ pub fn parser_polymetric(input: &str) -> IResult<&str, Parsed> {
         )),
         |(elements, length)| {
             Parsed::Polymetric(Polymetric {
-                elements,
+                elements: elements.concat(),
                 length: length.parse().unwrap(),
             })
         },

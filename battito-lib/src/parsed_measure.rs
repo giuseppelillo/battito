@@ -1,17 +1,17 @@
 use crate::measure::Measure;
-use crate::primitives::{Alternate, Note};
+use crate::primitives::{Alternate, Event};
 use crate::utils::lcm_vec;
 use crate::{DURATION_DEFAULT, VELOCITY_DEFAULT};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Single {
-    Note(Note),
+    Event(Event),
     Alternate(Alternate),
 }
 
 impl Single {
     pub fn empty() -> Self {
-        Single::Note(Note {
+        Single::Event(Event {
             value: "0".to_string(),
             velocity: 0,
             duration: 0,
@@ -77,7 +77,7 @@ impl ParsedMeasure {
 
     fn out(parsed_measure: ParsedMeasure) -> Measure {
         match parsed_measure {
-            Self::Single(Single::Note(n)) => Measure::Note(n.clone()),
+            Self::Single(Single::Event(n)) => Measure::Event(n.clone()),
             Self::Group(x) => {
                 let nested: Vec<Measure> = x.iter().map(|b| Self::out(b.clone())).collect();
                 Measure::Group(nested)
@@ -97,7 +97,7 @@ impl ParsedMeasure {
 
     fn expand_rec(pm: &mut ParsedMeasure, iter: usize) -> () {
         match pm {
-            ParsedMeasure::Single(Single::Note(_)) => (),
+            ParsedMeasure::Single(Single::Event(_)) => (),
             ParsedMeasure::Single(Single::Alternate(an)) => *pm = an.next(iter).to_parsed_measure(),
             ParsedMeasure::Group(x) => {
                 for a in x {
@@ -109,14 +109,14 @@ impl ParsedMeasure {
 
     // Constructors
     pub fn alternate(value: Vec<&str>) -> Self {
-        let notes: Vec<ParsedMeasure> = value
+        let events: Vec<ParsedMeasure> = value
             .iter()
             .map(|value| {
                 let (value_parsed, velocity, duration) = match *value {
                     "~" => ("0", 0, 0),
                     p => (p, VELOCITY_DEFAULT, DURATION_DEFAULT),
                 };
-                Self::Single(Single::Note(Note {
+                Self::Single(Single::Event(Event {
                     value: value_parsed.to_string(),
                     velocity,
                     duration,
@@ -124,51 +124,51 @@ impl ParsedMeasure {
             })
             .collect();
 
-        Self::Single(Single::Alternate(Alternate::from_parsed_measures(&notes)))
+        Self::Single(Single::Alternate(Alternate::from_parsed_measures(&events)))
     }
 
-    pub fn note(value: &str) -> Self {
+    pub fn event(value: &str) -> Self {
         let (value_parsed, velocity, duration) = match value {
             "~" => ("0", 0, 0),
             p => (p, VELOCITY_DEFAULT, DURATION_DEFAULT),
         };
-        Self::Single(Single::Note(Note {
+        Self::Single(Single::Event(Event {
             value: value_parsed.to_string(),
             velocity,
             duration,
         }))
     }
 
-    pub fn note_pitch_velocity(value: &str, velocity: u32) -> Self {
+    pub fn event_value_velocity(value: &str, velocity: u32) -> Self {
         let value_parsed = match value {
             "~" => "0",
             p => p,
         };
-        Self::Single(Single::Note(Note {
+        Self::Single(Single::Event(Event {
             value: value_parsed.to_string(),
             velocity,
             duration: DURATION_DEFAULT,
         }))
     }
 
-    pub fn note_pitch_duration(value: &str, duration: u32) -> Self {
+    pub fn event_value_duration(value: &str, duration: u32) -> Self {
         let value_parsed = match value {
             "~" => "0",
             p => p,
         };
-        Self::Single(Single::Note(Note {
+        Self::Single(Single::Event(Event {
             value: value_parsed.to_string(),
             velocity: VELOCITY_DEFAULT,
             duration,
         }))
     }
 
-    pub fn note_pitch_velocity_duration(value: &str, velocity: u32, duration: u32) -> Self {
+    pub fn event_value_velocity_duration(value: &str, velocity: u32, duration: u32) -> Self {
         let value_parsed = match value {
             "~" => "0",
             p => p,
         };
-        Self::Single(Single::Note(Note {
+        Self::Single(Single::Event(Event {
             value: value_parsed.to_string(),
             velocity,
             duration,
@@ -218,7 +218,7 @@ impl Polymetric {
 
     fn rec(pm: &mut ParsedMeasure, iter: usize) -> () {
         match pm {
-            ParsedMeasure::Single(Single::Note(_)) => (),
+            ParsedMeasure::Single(Single::Event(_)) => (),
             ParsedMeasure::Single(Single::Alternate(an)) => *pm = an.next(iter).to_parsed_measure(),
             ParsedMeasure::Group(x) => {
                 for a in x {
@@ -261,7 +261,7 @@ impl Polymetric {
 
     fn out(parsed_measure: ParsedMeasure) -> Measure {
         match parsed_measure {
-            ParsedMeasure::Single(Single::Note(n)) => Measure::Note(n.clone()),
+            ParsedMeasure::Single(Single::Event(n)) => Measure::Event(n.clone()),
             ParsedMeasure::Group(x) => {
                 let nested: Vec<Measure> = x.iter().map(|b| Self::out(b.clone())).collect();
                 Measure::Group(nested)

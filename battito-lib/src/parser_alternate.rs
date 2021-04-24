@@ -1,6 +1,6 @@
 use crate::parsed_measure::ParsedMeasure;
 use crate::parsed_measure::Single;
-use crate::parser::parser_note;
+use crate::parser::parser_event;
 use crate::primitives::{Alternate, PrimitiveGroup};
 use nom::branch::alt;
 use nom::character::complete::char;
@@ -19,8 +19,8 @@ pub fn parser_alternate(input: &str) -> IResult<&str, ParsedMeasure> {
     )(input)
 }
 
-fn parser_primitive_note(input: &str) -> IResult<&str, PrimitiveGroup> {
-    map(parser_note, |pm| PrimitiveGroup::from_parsed_measure(&pm))(input)
+fn parser_primitive_event(input: &str) -> IResult<&str, PrimitiveGroup> {
+    map(parser_event, |pm| PrimitiveGroup::from_parsed_measure(&pm))(input)
 }
 
 fn parser_primitive_group(input: &str) -> IResult<&str, PrimitiveGroup> {
@@ -34,5 +34,5 @@ pub fn parser_group_inner(input: &str) -> IResult<&str, PrimitiveGroup> {
 }
 
 pub fn parser_primitive(input: &str) -> IResult<&str, PrimitiveGroup> {
-    alt((parser_primitive_group, parser_primitive_note))(input)
+    alt((parser_primitive_group, parser_primitive_event))(input)
 }

@@ -1,13 +1,13 @@
 use crate::parsed_measure::{ParsedMeasure, Single};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Note {
+pub struct Event {
     pub value: String,
     pub velocity: u32,
     pub duration: u32,
 }
 
-impl Note {
+impl Event {
     pub fn advance(&self, index: u32, length: u32) -> u32 {
         let mut i = index;
         for _ in 1..length {
@@ -17,7 +17,7 @@ impl Note {
     }
 
     pub fn empty() -> Self {
-        Note {
+        Event {
             value: "0".to_string(),
             velocity: 0,
             duration: 0,
@@ -45,14 +45,14 @@ impl Alternate {
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum PrimitiveGroup {
-    Single(Note),
+    Single(Event),
     Group(Vec<PrimitiveGroup>),
 }
 
 impl PrimitiveGroup {
     pub fn to_parsed_measure(&self) -> ParsedMeasure {
         match self {
-            PrimitiveGroup::Single(sp) => ParsedMeasure::Single(Single::Note(sp.clone())),
+            PrimitiveGroup::Single(sp) => ParsedMeasure::Single(Single::Event(sp.clone())),
             PrimitiveGroup::Group(x) => {
                 ParsedMeasure::Group(x.iter().map(|pg| pg.to_parsed_measure()).collect())
             }
@@ -61,7 +61,7 @@ impl PrimitiveGroup {
 
     pub fn from_parsed_measure(parsed_measure: &ParsedMeasure) -> Self {
         match parsed_measure {
-            ParsedMeasure::Single(Single::Note(note)) => PrimitiveGroup::Single(note.clone()),
+            ParsedMeasure::Single(Single::Event(event)) => PrimitiveGroup::Single(event.clone()),
             ParsedMeasure::Group(x) => {
                 PrimitiveGroup::Group(x.iter().map(Self::from_parsed_measure).collect())
             }

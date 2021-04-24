@@ -2,7 +2,7 @@ use crate::error::Error;
 use crate::euclidean::Euclidean;
 use crate::expansion::Expansion;
 use crate::parsed_measure::ParsedMeasure;
-use crate::parser::{inner_parser_group, parser_note, parser_parsed_measure};
+use crate::parser::{inner_parser_group, parser_event, parser_parsed_measure};
 use crate::parser_alternate::parser_alternate;
 use nom::branch::alt;
 use nom::character::complete::{char, digit1};
@@ -51,7 +51,7 @@ fn inner_parser(input: &str) -> IResult<&str, ParsedMeasure> {
 fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {
     alt((
         map(Euclidean::parse, |v| v.first().unwrap().clone()),
-        parser_note,
+        parser_event,
         parser_alternate,
     ))(input)
 }

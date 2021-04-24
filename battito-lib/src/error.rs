@@ -2,7 +2,7 @@ use std::num::ParseIntError;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
-    NoteParsingError,
+    EventParsingError,
     DSLParsingError(ParsingError),
     UnexpectedError,
 }
@@ -21,6 +21,6 @@ pub enum EuclideanError {
 
 impl From<ParseIntError> for Error {
     fn from(_: ParseIntError) -> Self {
-        Error::NoteParsingError
+        Error::EventParsingError
     }
 }

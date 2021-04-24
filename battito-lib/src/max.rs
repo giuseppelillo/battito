@@ -1,4 +1,4 @@
-use crate::primitives::Note;
+use crate::primitives::Event;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -9,21 +9,21 @@ pub struct Payload {
     pub subdivision: u32,
 }
 
-pub struct MaxNote {
+pub struct MaxEvent {
     pub index: u32,
-    pub note: Note,
+    pub event: Event,
 }
 
-impl MaxNote {
+impl MaxEvent {
     pub fn display(&self) -> String {
         format!(
             "{} {} {} {}",
-            self.index, self.note.value, self.note.velocity, self.note.duration
+            self.index, self.event.value, self.event.velocity, self.event.duration
         )
     }
 }
 
-pub struct Pattern(pub Vec<MaxNote>);
+pub struct Pattern(pub Vec<MaxEvent>);
 
 impl Pattern {
     pub fn serialize(&self) -> String {

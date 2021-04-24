@@ -16,12 +16,12 @@ use nom::{
 };
 use crate::replicated::Replicated;
 
-pub fn parser_note(input: &str) -> IResult<&str, ParsedMeasure> {
-    map(alt((alphanumeric1, tag("~"))), ParsedMeasure::note)(input)
+pub fn parser_event(input: &str) -> IResult<&str, ParsedMeasure> {
+    map(alt((alphanumeric1, tag("~"))), ParsedMeasure::event)(input)
 }
 
 pub fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {
-    alt((parser_note, parser_alternate))(input)
+    alt((parser_event, parser_alternate))(input)
 }
 
 pub fn parser_parsed_measure(input: &str) -> IResult<&str, Vec<ParsedMeasure>> {

@@ -1,4 +1,4 @@
-use crate::max::{MaxNote, Pattern, Payload};
+use crate::max::{MaxEvent, Pattern, Payload};
 use crate::measure::Measure;
 use crate::parsed_measure::Parsed;
 
@@ -38,7 +38,7 @@ impl Sequence {
     }
 
     fn to_pattern(&self) -> Pattern {
-        let mut pattern: Vec<MaxNote> = Vec::new();
+        let mut pattern: Vec<MaxEvent> = Vec::new();
         let mut i = 1;
         self.measures.iter().for_each(|m| {
             pattern.extend(m.to_pattern(i).0);

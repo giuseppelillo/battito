@@ -7,7 +7,7 @@ use nom::character::complete::{char, digit1};
 use nom::combinator::{map_res, map};
 use nom::sequence::{preceded, tuple};
 use nom::IResult;
-use crate::parser::{inner_parser_group, parser_note};
+use crate::parser::{inner_parser_group, parser_event};
 use crate::parser_alternate::parser_alternate;
 
 pub struct Replicated {
@@ -51,7 +51,7 @@ fn inner_parser(input: &str) -> IResult<&str, ParsedMeasure> {
 fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {
     alt((
         map(Euclidean::parse, |v| v.first().unwrap().clone()),
-        parser_note,
+        parser_event,
         parser_alternate,
     ))(input)
 }

@@ -183,6 +183,8 @@ fn repeated() {
     assert_eq!(expected, out);
     let out = interpret("a > [b [s h [h s] b]]*2 s");
     let expected = interpret("a > [[b [s h [h s] b]] [b [s h [h s] b]]] s");
+    let out = interpret("a > [b [s h [h s]*3 b]]*2 s");
+    let expected = interpret("a > [[b [s h [[h s] [h s] [h s]] b]] [b [s h [[h s] [h s] [h s]] b]]] s");
     assert_eq!(expected, out);
     let out = interpret("a > <b,h>*2 s");
     let expected = interpret("a > [<b,h> <b,h>] s");
@@ -206,6 +208,9 @@ fn replicated() {
     assert_eq!(expected, out);
     let out = interpret("a > [b [s h [h s] b]]!2 s");
     let expected = interpret("a > [b [s h [h s] b]] [b [s h [h s] b]] s");
+    assert_eq!(expected, out);
+    let out = interpret("a > [b [s h [h s]!3 b]]!2 s");
+    let expected = interpret("a > [b [s h [h s] [h s] [h s] b]] [b [s h [h s] [h s] [h s] b]] s");
     assert_eq!(expected, out);
     let out = interpret("a > <b,h>!2 s");
     let expected = interpret("a > <b,h> <b,h> s");
@@ -241,6 +246,18 @@ fn probability() {
             subdivision: 1920
         }
     );
+    assert_eq!(expected, out);
+
+    let out = interpret("a > 1 2?40!2 3");
+    let expected = interpret("a > 1 2?40 2?40 3");
+    assert_eq!(expected, out);
+
+    let out = interpret("a > 1 2?40*2 3");
+    let expected = interpret("a > 1 [2?40 2?40] 3");
+    assert_eq!(expected, out);
+
+    let out = interpret("a > 1 [2?40*2 5] 3");
+    let expected = interpret("a > 1 [[2?40 2?40] 5] 3");
     assert_eq!(expected, out);
 
     /* Not yet implemented:

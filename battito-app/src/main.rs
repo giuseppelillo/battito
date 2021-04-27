@@ -1,4 +1,5 @@
 mod error;
+mod line;
 
 use crate::error::Error;
 use battito_lib::interpreter::interpret;
@@ -6,7 +7,13 @@ use battito_lib::max::Payload;
 use nannou_osc as osc;
 use nannou_osc::rosc::OscMessage;
 use nannou_osc::{Connected, Sender};
-use std::io;
+use rustyline::error::ReadlineError;
+use rustyline::{EditMode, Editor, Helper, ColorMode};
+use rustyline::highlight::MatchingBracketHighlighter;
+use crate::line::MyHelper;
+use rustyline::hint::HistoryHinter;
+use rustyline::validate::MatchingBracketValidator;
+use rustyline::completion::FilenameCompleter;
 
 pub struct Config {
     host: String,
@@ -32,24 +39,63 @@ fn main() {
         port: 1234,
     };
     let sender = config.sender();
+    let terminal_config = rustyline::config::Config::builder()
+        .history_ignore_space(true)
+        .edit_mode(EditMode::Vi)
+        .color_mode(ColorMode::Enabled)
+        .build();
+    let p = ">> ".to_string();
+    let helper = MyHelper {
+        highlighter: MatchingBracketHighlighter::new(),
+        colored_prompt: format!("\x1b[1;32m{}\x1b[0m", p),
+        completer: FilenameCompleter::new(),
+        validator: MatchingBracketValidator::new(),
+        hinter: HistoryHinter {}
+    };
+    let mut editor = Editor::with_config(terminal_config);
+    editor.set_helper(Some(helper));
+    if editor.load_history("history.txt").is_err() {
+        println!("No previous history.");
+    }
     loop {
-        match run(&sender) {
-            Ok(_) => (),
+        match run(&mut editor, &p, &sender) {
+            Ok(code) => {
+                if code == 0 {
+                    break;
+                }
+            }
             Err(e) => println!("{:?}", e),
         }
     }
+    editor.save_history("history.txt").unwrap();
 }
 
-fn run(sender: &Sender<Connected>) -> Result<usize, Error> {
-    let mut input = String::new();
-    let stdin = io::stdin();
-    let _ = stdin.read_line(&mut input)?;
+fn run<T: Helper>(editor: &mut Editor<T>,
+                  prompt: &str,
+                  sender: &Sender<Connected>) -> Result<usize, Error> {
+    let readline = editor.readline(&prompt);
+    match readline {
+        Ok(line) => {
+            editor.add_history_entry(line.as_str());
+            let payload = interpret(&line)?;
+            let packet = to_osc_message(&payload)?;
+            println!("{}", packet.addr);
 
-    let payload = interpret(&input)?;
-    let packet = to_osc_message(&payload)?;
-    println!("{}", packet.addr);
-
-    sender.send(packet).map_err(Error::from)
+            sender.send(packet).map_err(Error::from)
+        }
+        Err(ReadlineError::Interrupted) => {
+            // println!("CTRL-C");
+            Ok(0)
+        }
+        Err(ReadlineError::Eof) => {
+            // println!("CTRL-D");
+            Ok(0)
+        }
+        Err(err) => {
+            println!("Error: {:?}", err);
+            Err(Error::InputError)
+        }
+    }
 }
 
 fn to_osc_message(payload: &Payload) -> Result<OscMessage, Error> {

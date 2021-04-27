@@ -59,11 +59,8 @@ pub struct Euclidean {
 impl Euclidean {
     // b(<1,2,4>,<4,8>,<0,1>) -> <b(1,4,0),b(2,8,1),b(4,4,0),b(1,8,1),b(2,4,0),b(4,8,1)> -> <[b ~ ~ ~], [b
     pub fn to_single_pattern(&self) -> Result<Single, Error> {
-        let alternates: Result<Vec<PrimitiveGroup>, Error> = self
-            .expand_alternate()
-            .iter()
-            .map(|e| e.to_primitive_group())
-            .collect();
+        let alternates: Result<Vec<PrimitiveGroup>, Error> =
+            self.expand_alternate().iter().map(|e| e.to_primitive_group()).collect();
         Ok(Single::Alternate(Alternate(alternates?)))
     }
 
@@ -126,11 +123,7 @@ impl Euclidean {
     }
 
     fn count_replications(&self) -> [u32; 3] {
-        [
-            self.n.replications(),
-            self.m.replications(),
-            self.r.replications(),
-        ]
+        [self.n.replications(), self.m.replications(), self.r.replications()]
     }
 
     fn expand_alternate(&self) -> Vec<Euclidean> {
@@ -157,13 +150,9 @@ impl Euclidean {
     ) -> Result<Self, Error> {
         let r_unwrap = r.unwrap_or(EuclideanPrimitive::Single(0));
         if n.max_value()? > m.max_value()? {
-            Err(Error::DSLParsingError(ParsingError::EuclideanError(
-                NGreaterThanM,
-            )))
+            Err(Error::DSLParsingError(ParsingError::EuclideanError(NGreaterThanM)))
         } else if r_unwrap.max_value()? >= m.max_value()? {
-            Err(Error::DSLParsingError(ParsingError::EuclideanError(
-                RGreaterEqualThanM,
-            )))
+            Err(Error::DSLParsingError(ParsingError::EuclideanError(RGreaterEqualThanM)))
         } else {
             Ok(Euclidean {
                 value,
@@ -300,13 +289,13 @@ mod tests {
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
@@ -318,13 +307,13 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
@@ -336,7 +325,7 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
         ]));
         assert_eq!(expected, e.to_primitive_group());
@@ -363,7 +352,7 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
@@ -375,7 +364,7 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
         ]));
         assert_eq!(expected, e.to_primitive_group());
@@ -441,7 +430,7 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
@@ -519,14 +508,14 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             value.clone(),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
         ]));
         assert_eq!(expected, e.to_primitive_group());
@@ -550,7 +539,7 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
@@ -562,13 +551,13 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
@@ -580,13 +569,13 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
@@ -619,7 +608,7 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
@@ -631,7 +620,7 @@ probability: 0,
                 value: "0".to_string(),
                 velocity: 0,
                 duration: 0,
-probability: 0,
+                probability: 0,
             }),
         ]));
         assert_eq!(expected, e.to_primitive_group());

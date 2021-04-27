@@ -43,10 +43,7 @@ impl Info {
     }
 }
 
-async fn parse(
-    info: web::Json<Info>,
-    data: web::Data<AppState>,
-) -> Result<HttpResponse, ServiceError> {
+async fn parse(info: web::Json<Info>, data: web::Data<AppState>) -> Result<HttpResponse, ServiceError> {
     let payload = interpret(&info.0.to_parser())?;
     let packet = to_osc_message(&payload)?;
     println!("{}", packet.addr);

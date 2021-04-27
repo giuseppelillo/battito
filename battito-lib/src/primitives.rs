@@ -37,11 +37,7 @@ impl Alternate {
     }
 
     pub fn from_parsed_measures(pms: &Vec<ParsedMeasure>) -> Self {
-        Alternate(
-            pms.iter()
-                .map(PrimitiveGroup::from_parsed_measure)
-                .collect(),
-        )
+        Alternate(pms.iter().map(PrimitiveGroup::from_parsed_measure).collect())
     }
 }
 
@@ -55,18 +51,14 @@ impl PrimitiveGroup {
     pub fn to_parsed_measure(&self) -> ParsedMeasure {
         match self {
             PrimitiveGroup::Single(sp) => ParsedMeasure::Single(Single::Event(sp.clone())),
-            PrimitiveGroup::Group(x) => {
-                ParsedMeasure::Group(x.iter().map(|pg| pg.to_parsed_measure()).collect())
-            }
+            PrimitiveGroup::Group(x) => ParsedMeasure::Group(x.iter().map(|pg| pg.to_parsed_measure()).collect()),
         }
     }
 
     pub fn from_parsed_measure(parsed_measure: &ParsedMeasure) -> Self {
         match parsed_measure {
             ParsedMeasure::Single(Single::Event(event)) => PrimitiveGroup::Single(event.clone()),
-            ParsedMeasure::Group(x) => {
-                PrimitiveGroup::Group(x.iter().map(Self::from_parsed_measure).collect())
-            }
+            ParsedMeasure::Group(x) => PrimitiveGroup::Group(x.iter().map(Self::from_parsed_measure).collect()),
             _ => panic!("Not expected here"),
         }
     }

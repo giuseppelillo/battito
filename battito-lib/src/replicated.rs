@@ -35,7 +35,7 @@ fn parser(input: &str) -> IResult<&str, Replicated> {
             let replications: Result<u32, Error> = digit.parse().map_err(Error::from);
             Ok(Replicated {
                 value: pm,
-                replications: digit.parse().unwrap(),
+                replications: replications? as usize,
             })
         },
     )(input)

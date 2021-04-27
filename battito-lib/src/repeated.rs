@@ -2,13 +2,13 @@ use crate::error::Error;
 use crate::euclidean::Euclidean;
 use crate::expansion::Expansion;
 use crate::parsed_measure::ParsedMeasure;
-use crate::parser::{inner_parser_group, parser_event, parser_parsed_measure};
+use crate::parser::{inner_parser_group, parser_event};
 use crate::parser_alternate::parser_alternate;
 use nom::branch::alt;
 use nom::character::complete::{char, digit1};
 use nom::combinator::{map, map_res};
 use nom::sequence::{preceded, tuple};
-use nom::{IResult, ParseTo};
+use nom::IResult;
 
 pub struct Repeated {
     value: ParsedMeasure,
@@ -17,10 +17,7 @@ pub struct Repeated {
 
 impl Expansion for Repeated {
     fn expand(&self) -> Result<Vec<ParsedMeasure>, Error> {
-        Ok(vec![ParsedMeasure::Group(vec![
-            self.value.clone();
-            self.repetitions
-        ])])
+        Ok(vec![ParsedMeasure::Group(vec![self.value.clone(); self.repetitions])])
     }
 
     fn parser(input: &str) -> IResult<&str, Self>
@@ -38,7 +35,7 @@ fn parser(input: &str) -> IResult<&str, Repeated> {
             let repetitions: Result<u32, Error> = digit.parse().map_err(Error::from);
             Ok(Repeated {
                 value: pm,
-                repetitions: digit.parse().unwrap(),
+                repetitions: repetitions? as usize,
             })
         },
     )(input)

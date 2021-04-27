@@ -169,10 +169,7 @@ impl Polymetric {
         println!("flattened: {:?}", extracted_and_flattened);
         let expanded_polymetric: Vec<ParsedMeasure> =
             Self::expand_polymetric(&extracted_and_flattened, self.length as usize);
-        expanded_polymetric
-            .iter()
-            .map(|p| Self::out(p.clone()))
-            .collect()
+        expanded_polymetric.iter().map(|p| Self::out(p.clone())).collect()
     }
 
     // [Group(x,y,z), Group(a,b,c)] => [x,y,z,a,b,c]

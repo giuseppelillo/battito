@@ -87,7 +87,7 @@ pub fn inner_parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
 
 pub fn parser(input: &str) -> IResult<&str, ParsedSequence> {
     map(
-        tuple((alphanumeric1, preceded(tag(" > "), parser_measures))),
+        tuple((alphanumeric1, preceded(tag(" $ "), parser_measures))),
         |(target, measures)| ParsedSequence {
             target: target.to_string(),
             measures,

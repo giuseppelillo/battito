@@ -2,7 +2,7 @@ use crate::error::EuclideanError::{NGreaterThanM, RGreaterEqualThanM};
 use crate::error::{Error, ParsingError};
 use crate::expansion::Expansion;
 use crate::parsed_measure::{ParsedMeasure, Single};
-use crate::parser_euclidean::parser_euclidean;
+use crate::parser::euclidean;
 use crate::primitives::Alternate;
 use crate::primitives::{Event, PrimitiveGroup};
 use crate::utils::lcm_vec;
@@ -171,7 +171,7 @@ impl Expansion for Euclidean {
     }
 
     fn parser(input: &str) -> IResult<&str, Self> {
-        parser_euclidean(input)
+        euclidean::parser_euclidean(input)
     }
 }
 

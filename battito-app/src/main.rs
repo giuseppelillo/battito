@@ -2,18 +2,18 @@ mod error;
 mod line;
 
 use crate::error::Error;
+use crate::line::MyHelper;
 use battito_lib::interpreter::interpret;
 use battito_lib::max::Payload;
 use nannou_osc as osc;
 use nannou_osc::rosc::OscMessage;
 use nannou_osc::{Connected, Sender};
+use rustyline::completion::FilenameCompleter;
 use rustyline::error::ReadlineError;
-use rustyline::{EditMode, Editor, Helper, ColorMode};
 use rustyline::highlight::MatchingBracketHighlighter;
-use crate::line::MyHelper;
 use rustyline::hint::HistoryHinter;
 use rustyline::validate::MatchingBracketValidator;
-use rustyline::completion::FilenameCompleter;
+use rustyline::{ColorMode, EditMode, Editor, Helper};
 
 pub struct Config {
     host: String,
@@ -50,7 +50,7 @@ fn main() {
         colored_prompt: format!("\x1b[1;31m{}\x1b[0m", p),
         completer: FilenameCompleter::new(),
         validator: MatchingBracketValidator::new(),
-        hinter: HistoryHinter {}
+        hinter: HistoryHinter {},
     };
     let mut editor = Editor::with_config(terminal_config);
     editor.set_helper(Some(helper));
@@ -70,9 +70,7 @@ fn main() {
     editor.save_history("history.txt").unwrap();
 }
 
-fn run<T: Helper>(editor: &mut Editor<T>,
-                  prompt: &str,
-                  sender: &Sender<Connected>) -> Result<usize, Error> {
+fn run<T: Helper>(editor: &mut Editor<T>, prompt: &str, sender: &Sender<Connected>) -> Result<usize, Error> {
     let readline = editor.readline(&prompt);
     match readline {
         Ok(line) => {

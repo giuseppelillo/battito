@@ -1,6 +1,6 @@
 use crate::error::Error;
 use crate::euclidean::{Euclidean, EuclideanPrimitive};
-use crate::parser_alternate::parser_primitive;
+use crate::parser::alternate::parser_primitive;
 use crate::primitives::PrimitiveGroup;
 use nom::branch::alt;
 use nom::character::complete::{char, digit1};

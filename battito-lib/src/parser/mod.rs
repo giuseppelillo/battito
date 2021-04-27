@@ -1,8 +1,13 @@
+pub mod alternate;
+pub mod euclidean;
+pub mod repeated;
+pub mod replicated;
+
 use crate::error::{Error, ParsingError};
 use crate::euclidean::Euclidean;
 use crate::expansion::Expansion;
 use crate::parsed_measure::{Parsed, ParsedMeasure, Polymetric};
-use crate::parser_alternate::parser_alternate;
+use crate::parser::alternate::parser_alternate;
 use crate::repeated::Repeated;
 use crate::replicated::Replicated;
 use crate::sequence::ParsedSequence;
@@ -17,7 +22,14 @@ use nom::{
     IResult,
 };
 
-pub fn parser_event_with_prob(input: &str) -> IResult<&str, ParsedMeasure> {
+pub fn parse(input: &str) -> Result<ParsedSequence, Error> {
+    match parser(input) {
+        Ok(e) => Ok(e.1),
+        Err(_) => Err(Error::DSLParsingError(ParsingError::Generic)),
+    }
+}
+
+pub(crate) fn parser_event_with_prob(input: &str) -> IResult<&str, ParsedMeasure> {
     map_res(
         tuple((alphanumeric1, preceded(char('?'), digit1))),
         |(value, prob): (&str, &str)| -> Result<ParsedMeasure, Error> {
@@ -27,19 +39,19 @@ pub fn parser_event_with_prob(input: &str) -> IResult<&str, ParsedMeasure> {
     )(input)
 }
 
-pub fn parser_event_no_prob(input: &str) -> IResult<&str, ParsedMeasure> {
+pub(crate) fn parser_event_no_prob(input: &str) -> IResult<&str, ParsedMeasure> {
     map(alt((alphanumeric1, tag("~"))), ParsedMeasure::event)(input)
 }
 
-pub fn parser_event(input: &str) -> IResult<&str, ParsedMeasure> {
+pub(crate) fn parser_event(input: &str) -> IResult<&str, ParsedMeasure> {
     alt((parser_event_with_prob, parser_event_no_prob))(input)
 }
 
-pub fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {
+pub(crate) fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {
     alt((parser_event, parser_alternate))(input)
 }
 
-pub fn parser_parsed_measure(input: &str) -> IResult<&str, Vec<ParsedMeasure>> {
+pub(crate) fn parser_parsed_measure(input: &str) -> IResult<&str, Vec<ParsedMeasure>> {
     alt((
         Repeated::parse,
         Replicated::parse,
@@ -49,13 +61,13 @@ pub fn parser_parsed_measure(input: &str) -> IResult<&str, Vec<ParsedMeasure>> {
     ))(input)
 }
 
-pub fn parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
+pub(crate) fn parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
     map(separated_list0(char(' '), parser_parsed_measure), |v| {
         ParsedMeasure::Group(v.concat())
     })(input)
 }
 
-pub fn parser_polymetric(input: &str) -> IResult<&str, Parsed> {
+pub(crate) fn parser_polymetric(input: &str) -> IResult<&str, Parsed> {
     map(
         tuple((
             preceded(
@@ -73,19 +85,19 @@ pub fn parser_polymetric(input: &str) -> IResult<&str, Parsed> {
     )(input)
 }
 
-pub fn parser_measure(input: &str) -> IResult<&str, Parsed> {
+pub(crate) fn parser_measure(input: &str) -> IResult<&str, Parsed> {
     alt((parser_polymetric, map(parser_group, Parsed::ParsedMeasure)))(input)
 }
 
-pub fn parser_measures(input: &str) -> IResult<&str, Vec<Parsed>> {
+pub(crate) fn parser_measures(input: &str) -> IResult<&str, Vec<Parsed>> {
     separated_list0(tag(" | "), parser_measure)(input)
 }
 
-pub fn inner_parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
+pub(crate) fn inner_parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
     preceded(char('['), terminated(parser_group, char(']')))(input)
 }
 
-pub fn parser(input: &str) -> IResult<&str, ParsedSequence> {
+pub(crate) fn parser(input: &str) -> IResult<&str, ParsedSequence> {
     map(
         tuple((alphanumeric1, preceded(tag(" $ "), parser_measures))),
         |(target, measures)| ParsedSequence {
@@ -93,11 +105,4 @@ pub fn parser(input: &str) -> IResult<&str, ParsedSequence> {
             measures,
         },
     )(input)
-}
-
-pub fn parse(input: &str) -> Result<ParsedSequence, Error> {
-    match parser(input) {
-        Ok(e) => Ok(e.1),
-        Err(_) => Err(Error::DSLParsingError(ParsingError::Generic)),
-    }
 }

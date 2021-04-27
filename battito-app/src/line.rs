@@ -1,12 +1,12 @@
+use rustyline::completion::{Completer, FilenameCompleter, Pair};
+use rustyline::error::ReadlineError;
+use rustyline::highlight::{Highlighter, MatchingBracketHighlighter};
+use rustyline::hint::{Hinter, HistoryHinter};
+use rustyline::validate::{MatchingBracketValidator, Validator};
+use rustyline::{validate, Context};
 use rustyline_derive::Helper;
-use rustyline::highlight::{MatchingBracketHighlighter, Highlighter};
 use std::borrow::Cow;
 use std::borrow::Cow::{Borrowed, Owned};
-use rustyline::validate::{Validator, MatchingBracketValidator};
-use rustyline::{validate, Context};
-use rustyline::hint::{Hinter, HistoryHinter};
-use rustyline::completion::{Completer, Pair, FilenameCompleter};
-use rustyline::error::ReadlineError;
 
 #[derive(Helper)]
 pub struct MyHelper {
@@ -22,11 +22,7 @@ impl Highlighter for MyHelper {
         self.highlighter.highlight(line, pos)
     }
 
-    fn highlight_prompt<'b, 's: 'b, 'p: 'b>(
-        &'s self,
-        prompt: &'p str,
-        default: bool,
-    ) -> Cow<'b, str> {
+    fn highlight_prompt<'b, 's: 'b, 'p: 'b>(&'s self, prompt: &'p str, default: bool) -> Cow<'b, str> {
         if default {
             Borrowed(&self.colored_prompt)
         } else {
@@ -44,10 +40,7 @@ impl Highlighter for MyHelper {
 }
 
 impl Validator for MyHelper {
-    fn validate(
-        &self,
-        ctx: &mut validate::ValidationContext,
-    ) -> rustyline::Result<validate::ValidationResult> {
+    fn validate(&self, ctx: &mut validate::ValidationContext) -> rustyline::Result<validate::ValidationResult> {
         self.validator.validate(ctx)
     }
 
@@ -68,12 +61,7 @@ impl Hinter for MyHelper {
 impl Completer for MyHelper {
     type Candidate = Pair;
 
-    fn complete(
-        &self,
-        line: &str,
-        pos: usize,
-        ctx: &Context<'_>,
-    ) -> Result<(usize, Vec<Pair>), ReadlineError> {
+    fn complete(&self, line: &str, pos: usize, ctx: &Context<'_>) -> Result<(usize, Vec<Pair>), ReadlineError> {
         self.completer.complete(line, pos, ctx)
     }
 }

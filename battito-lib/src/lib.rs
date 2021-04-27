@@ -1,18 +1,16 @@
-pub mod error;
-mod euclidean;
-mod expansion;
 pub mod interpreter;
-pub mod max;
-mod measure;
-mod parsed_measure;
 mod parser;
-mod parser_alternate;
-mod parser_euclidean;
-mod primitives;
-mod repeated;
-mod replicated;
-mod sequence;
 mod utils;
+pub mod sequence;
+pub mod max;
+pub mod euclidean;
+pub mod expansion;
+pub mod error;
+pub mod primitives;
+mod measure;
+pub mod parsed_measure;
+pub mod repeated;
+pub mod replicated;
 
 pub(crate) const VELOCITY_DEFAULT: u32 = 100;
 pub(crate) const DURATION_DEFAULT: u32 = 100;

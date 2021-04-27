@@ -69,7 +69,7 @@ impl Euclidean {
         let pulses = *self.n.get_value()?;
         let r = *self.r.get_value()? as usize;
 
-        let mut pattern: Vec<PrimitiveGroup> = Vec::new();
+        let mut pattern: VecDeque<PrimitiveGroup> = VecDeque::new();
         let mut counts: Vec<u32> = Vec::new();
         let mut remainders: Vec<u32> = Vec::new();
         let mut divisor = steps - pulses;
@@ -90,12 +90,12 @@ impl Euclidean {
             euclidean: &Euclidean,
             level: isize,
             counts: &Vec<u32>,
-            pattern: &mut Vec<PrimitiveGroup>,
+            pattern: &mut VecDeque<PrimitiveGroup>,
             remainders: &Vec<u32>,
         ) -> () {
             match level {
-                -1 => pattern.push(PrimitiveGroup::Single(Event::empty())),
-                -2 => pattern.push(euclidean.value.clone()),
+                -1 => pattern.push_back(PrimitiveGroup::Single(Event::empty())),
+                -2 => pattern.push_back(euclidean.value.clone()),
                 _ => {
                     for _ in 0..counts[level as usize] {
                         build(euclidean, level - 1, counts, pattern, remainders);
@@ -119,7 +119,7 @@ impl Euclidean {
         }
 
         pattern.rotate_right(r);
-        Ok(PrimitiveGroup::Group(pattern))
+        Ok(PrimitiveGroup::Group(Vec::from(pattern)))
     }
 
     fn count_replications(&self) -> [u32; 3] {

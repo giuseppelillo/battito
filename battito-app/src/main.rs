@@ -47,7 +47,7 @@ fn main() {
     let p = ">> ".to_string();
     let helper = MyHelper {
         highlighter: MatchingBracketHighlighter::new(),
-        colored_prompt: format!("\x1b[1;32m{}\x1b[0m", p),
+        colored_prompt: format!("\x1b[1;31m{}\x1b[0m", p),
         completer: FilenameCompleter::new(),
         validator: MatchingBracketValidator::new(),
         hinter: HistoryHinter {}

@@ -185,8 +185,6 @@ mod tests {
         let e = Euclidean {
             value: PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             n: EuclideanPrimitive::Single(3),
@@ -198,8 +196,6 @@ mod tests {
             Euclidean {
                 value: PrimitiveGroup::Single(Event {
                     value: "x".to_string(),
-                    velocity: 100,
-                    duration: 100,
                     probability: 100,
                 }),
                 n: EuclideanPrimitive::Single(3),
@@ -209,8 +205,6 @@ mod tests {
             Euclidean {
                 value: PrimitiveGroup::Single(Event {
                     value: "x".to_string(),
-                    velocity: 100,
-                    duration: 100,
                     probability: 100,
                 }),
                 n: EuclideanPrimitive::Single(3),
@@ -220,8 +214,6 @@ mod tests {
             Euclidean {
                 value: PrimitiveGroup::Single(Event {
                     value: "x".to_string(),
-                    velocity: 100,
-                    duration: 100,
                     probability: 100,
                 }),
                 n: EuclideanPrimitive::Single(3),
@@ -231,8 +223,6 @@ mod tests {
             Euclidean {
                 value: PrimitiveGroup::Single(Event {
                     value: "x".to_string(),
-                    velocity: 100,
-                    duration: 100,
                     probability: 100,
                 }),
                 n: EuclideanPrimitive::Single(3),
@@ -242,8 +232,6 @@ mod tests {
             Euclidean {
                 value: PrimitiveGroup::Single(Event {
                     value: "x".to_string(),
-                    velocity: 100,
-                    duration: 100,
                     probability: 100,
                 }),
                 n: EuclideanPrimitive::Single(3),
@@ -253,8 +241,6 @@ mod tests {
             Euclidean {
                 value: PrimitiveGroup::Single(Event {
                     value: "x".to_string(),
-                    velocity: 100,
-                    duration: 100,
                     probability: 100,
                 }),
                 n: EuclideanPrimitive::Single(3),
@@ -270,8 +256,6 @@ mod tests {
         let e = Euclidean {
             value: PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             n: EuclideanPrimitive::Single(3),
@@ -281,50 +265,34 @@ mod tests {
         let expected = Ok(PrimitiveGroup::Group(vec![
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
         ]));
@@ -333,8 +301,6 @@ mod tests {
         let e = Euclidean {
             value: PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             n: EuclideanPrimitive::Single(2),
@@ -344,26 +310,18 @@ mod tests {
         let expected = Ok(PrimitiveGroup::Group(vec![
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
         ]));
@@ -372,8 +330,6 @@ mod tests {
         let e = Euclidean {
             value: PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             n: EuclideanPrimitive::Single(4),
@@ -383,26 +339,18 @@ mod tests {
         let expected = Ok(PrimitiveGroup::Group(vec![
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
         ]));
@@ -411,8 +359,6 @@ mod tests {
         let e = Euclidean {
             value: PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             n: EuclideanPrimitive::Single(7),
@@ -422,50 +368,34 @@ mod tests {
         let expected = Ok(PrimitiveGroup::Group(vec![
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
         ]));
@@ -478,21 +408,15 @@ mod tests {
             PrimitiveGroup::Group(vec![
                 PrimitiveGroup::Single(Event {
                     value: "a".to_string(),
-                    velocity: 120,
-                    duration: 114,
                     probability: 114,
                 }),
                 PrimitiveGroup::Single(Event {
                     value: "ll".to_string(),
-                    velocity: 59,
-                    duration: 63,
                     probability: 63,
                 }),
             ]),
             PrimitiveGroup::Single(Event {
                 value: "b".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
         ]);
@@ -506,15 +430,11 @@ mod tests {
             value.clone(),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             value.clone(),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
         ]));
@@ -526,8 +446,6 @@ mod tests {
         let e = Euclidean {
             value: PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             n: EuclideanPrimitive::Single(3),
@@ -537,50 +455,34 @@ mod tests {
         let expected = Ok(PrimitiveGroup::Group(vec![
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
         ]));
@@ -589,8 +491,6 @@ mod tests {
         let e = Euclidean {
             value: PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             n: EuclideanPrimitive::Single(2),
@@ -600,26 +500,18 @@ mod tests {
         let expected = Ok(PrimitiveGroup::Group(vec![
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "0".to_string(),
-                velocity: 0,
-                duration: 0,
                 probability: 0,
             }),
         ]));
@@ -628,8 +520,6 @@ mod tests {
         let e = Euclidean {
             value: PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             n: EuclideanPrimitive::Single(4),
@@ -639,26 +529,18 @@ mod tests {
         let expected = Ok(PrimitiveGroup::Group(vec![
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
             PrimitiveGroup::Single(Event {
                 value: "x".to_string(),
-                velocity: 100,
-                duration: 100,
                 probability: 100,
             }),
         ]));

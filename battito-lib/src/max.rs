@@ -15,10 +15,10 @@ pub struct MaxEvent {
 }
 
 impl MaxEvent {
-    pub fn display(&self) -> String {
+    pub fn display(&self, velocity: u32, duration: u32) -> String {
         format!(
             "{} {} {} {} {}",
-            self.index, self.event.value, self.event.velocity, self.event.duration, self.event.probability
+            self.index, self.event.value, velocity, duration, self.event.probability
         )
     }
 }
@@ -26,8 +26,8 @@ impl MaxEvent {
 pub struct Pattern(pub Vec<MaxEvent>);
 
 impl Pattern {
-    pub fn serialize(&self) -> String {
-        let strings: Vec<String> = self.0.iter().map(|m| m.display()).collect();
+    pub fn serialize(&self, velocity: u32, duration: u32) -> String {
+        let strings: Vec<String> = self.0.iter().map(|m| m.display(velocity, duration)).collect();
         strings.join(", ")
     }
 }

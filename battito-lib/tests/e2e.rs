@@ -261,6 +261,22 @@ fn probability() {
     let expected = interpret("a $ 1 [[2?40 2?40] 5] 3");
     assert_eq!(expected, out);
 
+    let out = interpret("a $ 1 <2,4?22> 3 | 5 6");
+    let expected = interpret("a $ 1 2 3 | 1 4?22 3 | 5 6");
+    assert_eq!(expected, out);
+
+    let out = interpret("a $ {1 2 3?22 4}%5");
+    let expected = interpret("a $ 1 2 3?22 4 1 | 2 3?22 4 1 2 | 3?22 4 1 2 3?22 | 4 1 2 3?22 4");
+    assert_eq!(expected, out);
+
+    let out = interpret("a $ {1 2 <3,4?21> <5,6,7>}%4");
+    let expected = interpret("a $ 1 2 3 5 | 1 2 4?21 6 | 1 2 3 7 | 1 2 4?21 5 | 1 2 3 6 | 1 2 4?21 7");
+    assert_eq!(expected, out);
+
+    let out = interpret("a $ b?30(3,8,0) h");
+    let expected = interpret("a $ [b?30 ~ ~ b?30 ~ ~ b?30 ~] h");
+    assert_eq!(expected, out);
+
     /* Not yet implemented:
 
     let out = interpret("a $ 1 [2 4]?22 3 | 5 6");

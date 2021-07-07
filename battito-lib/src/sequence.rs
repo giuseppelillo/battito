@@ -6,6 +6,7 @@ use crate::parsed_measure::Parsed;
 pub struct ParsedSequence {
     pub target: String,
     pub measures: Vec<Parsed>,
+    pub pattern: String,
 }
 
 #[derive(Debug, PartialEq)]
@@ -13,6 +14,7 @@ pub struct Sequence {
     pub target: String,
     pub measures: Vec<Measure>,
     pub subdivision: u32,
+    pub pattern: String,
 }
 
 impl ParsedSequence {
@@ -21,17 +23,18 @@ impl ParsedSequence {
             target: self.target.to_string(),
             measures: self.measures.iter().flat_map(|m| m.to_measures()).collect(),
             subdivision,
+            pattern: self.pattern.clone(),
         }
     }
 }
 
 impl Sequence {
-    pub fn to_max_message(&self, velocity: u32, duration: u32) -> Payload {
+    pub fn to_max_message(&self) -> Payload {
         Payload {
             target: self.target.clone(),
-            steps: self.to_pattern().serialize(velocity, duration),
+            steps: self.to_pattern().serialize(),
             length: self.measures.len() as u32,
-            subdivision: self.subdivision,
+            pattern: self.pattern.clone()
         }
     }
 

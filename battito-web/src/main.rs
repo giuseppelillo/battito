@@ -4,7 +4,7 @@ use crate::error::ServiceError;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use battito_lib::interpreter::{interpret, RunConfig};
 use battito_lib::max::Payload;
-use battito_lib::{DURATION_DEFAULT, SUBDIVISION_DEFAULT, VELOCITY_DEFAULT};
+use battito_lib::SUBDIVISION_DEFAULT;
 use nannou_osc as osc;
 use nannou_osc::rosc::OscMessage;
 use nannou_osc::{Connected, Sender};
@@ -48,7 +48,6 @@ impl Info {
 async fn parse(info: web::Json<Info>, data: web::Data<AppState>) -> Result<HttpResponse, ServiceError> {
     let payload = interpret(&info.0.to_parser(), &data.run_config)?;
     let packet = to_osc_message(&payload)?;
-    println!("{}", packet.addr);
 
     let _ = data.sender.send(packet).map_err(ServiceError::from)?;
     Ok(HttpResponse::Ok().finish())
@@ -67,8 +66,6 @@ async fn main() -> std::io::Result<()> {
         };
         let run_config = RunConfig {
             subdivision: SUBDIVISION_DEFAULT,
-            velocity: VELOCITY_DEFAULT,
-            duration: DURATION_DEFAULT,
         };
         let json_config = web::JsonConfig::default().limit(4096);
         App::new()

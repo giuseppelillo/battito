@@ -12,6 +12,4 @@ pub mod replicated;
 pub mod sequence;
 mod utils;
 
-pub const SUBDIVISION_DEFAULT: u32 = 100;
-pub const VELOCITY_DEFAULT: u32 = 100;
-pub const DURATION_DEFAULT: u32 = 100;
+pub const SUBDIVISION_DEFAULT: u32 = 1920;

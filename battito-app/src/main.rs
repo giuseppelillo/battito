@@ -5,7 +5,7 @@ use crate::error::Error;
 use crate::line::MyHelper;
 use battito_lib::interpreter::{interpret, RunConfig};
 use battito_lib::max::Payload;
-use battito_lib::{DURATION_DEFAULT, SUBDIVISION_DEFAULT, VELOCITY_DEFAULT};
+use battito_lib::SUBDIVISION_DEFAULT;
 use nannou_osc as osc;
 use nannou_osc::rosc::OscMessage;
 use nannou_osc::{Connected, Sender};
@@ -41,8 +41,6 @@ fn main() {
     };
     let run_config = RunConfig {
         subdivision: SUBDIVISION_DEFAULT,
-        velocity: VELOCITY_DEFAULT,
-        duration: DURATION_DEFAULT,
     };
     let sender = config.sender();
     let terminal_config = rustyline::config::Config::builder()
@@ -61,7 +59,7 @@ fn main() {
     let mut editor = Editor::with_config(terminal_config);
     editor.set_helper(Some(helper));
     if editor.load_history("history.txt").is_err() {
-        println!("No previous history.");
+        // println!("No previous history.");
     }
     loop {
         match run(&mut editor, &p, &sender, &run_config) {
@@ -88,7 +86,6 @@ fn run<T: Helper>(
             editor.add_history_entry(line.as_str());
             let payload = interpret(&line, run_config)?;
             let packet = to_osc_message(&payload)?;
-            println!("{}", packet.addr);
 
             sender.send(packet).map_err(Error::from)
         }

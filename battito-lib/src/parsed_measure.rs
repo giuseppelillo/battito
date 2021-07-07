@@ -155,9 +155,7 @@ impl Polymetric {
         // Create n copies of this ParsedMeasure
         let mut replicated: Vec<ParsedMeasure> = vec![group; n as usize];
         Self::expand_alternate(&mut replicated);
-        println!("replicated: {:?}", replicated);
         let extracted_and_flattened: Vec<ParsedMeasure> = Self::extract_and_flatten(replicated);
-        println!("flattened: {:?}", extracted_and_flattened);
         let expanded_polymetric: Vec<ParsedMeasure> =
             Self::expand_polymetric(&extracted_and_flattened, self.length as usize);
         expanded_polymetric.iter().map(|p| Self::out(p.clone())).collect()
@@ -198,7 +196,6 @@ impl Polymetric {
 
     fn expand_polymetric(elements: &Vec<ParsedMeasure>, length: usize) -> Vec<ParsedMeasure> {
         let elements_len = elements.len();
-        println!("elements.len: {} length {}", elements_len, length);
         let number_of_measures = if elements_len % length != 0 && length % elements_len != 0 {
             elements_len
         } else {
@@ -208,7 +205,6 @@ impl Polymetric {
                 elements_len / length
             }
         };
-        println!("number of measures {}", number_of_measures);
         let mut out: Vec<ParsedMeasure> = Vec::with_capacity(number_of_measures);
         let mut i: usize = 0;
         for _ in 0..number_of_measures {

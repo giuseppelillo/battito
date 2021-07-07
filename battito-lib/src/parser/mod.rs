@@ -89,8 +89,9 @@ pub(crate) fn parser_measure(input: &str) -> IResult<&str, Parsed> {
     alt((parser_polymetric, map(parser_group, Parsed::ParsedMeasure)))(input)
 }
 
-pub(crate) fn parser_measures(input: &str) -> IResult<&str, Vec<Parsed>> {
-    separated_list0(tag(" | "), parser_measure)(input)
+pub(crate) fn parser_measures(input: &str) -> IResult<&str, (Vec<Parsed>, &str)> {
+    map(separated_list0(tag(" | "), parser_measure),
+    |p| (p, input))(input)
 }
 
 pub(crate) fn inner_parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
@@ -100,9 +101,10 @@ pub(crate) fn inner_parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
 pub(crate) fn parser(input: &str) -> IResult<&str, ParsedSequence> {
     map(
         tuple((alphanumeric1, preceded(tag(" $ "), parser_measures))),
-        |(target, measures)| ParsedSequence {
+        |(target, parsed)| ParsedSequence {
             target: target.to_string(),
-            measures,
+            measures: parsed.0,
+            pattern: parsed.1.to_string()
         },
     )(input)
 }

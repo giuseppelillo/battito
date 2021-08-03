@@ -33,14 +33,12 @@ mod tests {
     #[test]
     fn two_measures() {
         let out = run("a $ 1 2 3 | 4 5 6 7");
-        let expected = Ok(
-            Payload {
-                target: "a".to_string(),
-                steps: "1 1 100, 641 2 100, 1281 3 100, 1921 4 100, 2401 5 100, 2881 6 100, 3361 7 100".to_string(),
-                length: 2,
-                pattern: "1 2 3 | 4 5 6 7".to_string(),
-            }
-        );
+        let expected = Ok(Payload {
+            target: "a".to_string(),
+            steps: "1 1 100, 641 2 100, 1281 3 100, 1921 4 100, 2401 5 100, 2881 6 100, 3361 7 100".to_string(),
+            length: 2,
+            pattern: "1 2 3 | 4 5 6 7".to_string(),
+        });
         assert_eq!(expected, out);
     }
 
@@ -144,8 +142,6 @@ mod tests {
         );
         test(&expected, &out);
     }
-
-
 
     #[test]
     fn euclidean_paper() {
@@ -258,14 +254,12 @@ mod tests {
         assert_eq!(expected, out);
 
         let out = run("a $ 1 [3?22 4] 3 | 5 6");
-        let expected = Ok(
-            Payload {
-                target: "a".to_string(),
-                steps: "1 1 100, 641 3 22, 961 4 100, 1281 3 100, 1921 5 100, 2881 6 100".to_string(),
-                length: 2,
-                pattern: "1 [3?22 4] 3 | 5 6".to_string(),
-            }
-        );
+        let expected = Ok(Payload {
+            target: "a".to_string(),
+            steps: "1 1 100, 641 3 22, 961 4 100, 1281 3 100, 1921 5 100, 2881 6 100".to_string(),
+            length: 2,
+            pattern: "1 [3?22 4] 3 | 5 6".to_string(),
+        });
         assert_eq!(expected, out);
 
         let out = run("a $ 1 2?40!2 3");

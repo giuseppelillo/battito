@@ -34,7 +34,7 @@ impl Sequence {
             target: self.target.clone(),
             steps: self.to_pattern().serialize(),
             length: self.measures.len() as u32,
-            pattern: self.pattern.clone()
+            pattern: self.pattern.clone(),
         }
     }
 

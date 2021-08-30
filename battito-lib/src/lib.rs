@@ -1,3 +1,4 @@
+mod display;
 pub mod error;
 pub mod euclidean;
 pub mod expansion;

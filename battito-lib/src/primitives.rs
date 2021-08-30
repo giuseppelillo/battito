@@ -1,6 +1,7 @@
 use crate::parsed_measure::{ParsedMeasure, Single};
+use serde::Serialize;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Event {
     pub value: String,
     pub probability: u32, // [0, 100]
@@ -37,7 +38,7 @@ impl Alternate {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum PrimitiveGroup {
     Single(Event),
     Group(Vec<PrimitiveGroup>),

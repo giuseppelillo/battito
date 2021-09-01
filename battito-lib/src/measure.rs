@@ -1,7 +1,10 @@
-use crate::max::{MaxEvent, Pattern};
 use crate::measure::Measure::Group;
 use crate::primitives::Event;
 use crate::utils::lcm;
+use crate::{
+    max::{MaxEvent, Pattern},
+    SUBDIVISION,
+};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Measure {
@@ -17,7 +20,7 @@ impl Measure {
         }
     }
 
-    pub fn to_pattern(&self, start: u32) -> Pattern {
+    pub fn to_pattern(&self, start: u32, length_multiplier: f32) -> Pattern {
         let max_events = match self {
             Measure::Event(event) => vec![MaxEvent {
                 index: 1,
@@ -25,7 +28,7 @@ impl Measure {
             }],
             Measure::Group(measures) => {
                 let mut vec: Vec<MaxEvent> = Vec::new();
-                Measure::max_event(1920, 1, &mut vec, start, measures);
+                Measure::max_event(SUBDIVISION, 1, &mut vec, start, measures, length_multiplier);
                 vec
             }
         };
@@ -38,20 +41,22 @@ impl Measure {
         out: &mut Vec<MaxEvent>,
         index: u32,
         elements: &Vec<Measure>,
+        length_multiplier: f32,
     ) -> u32 {
         let value = acc_value * elements.len() as u32;
         let length = subdivision / value;
         elements.iter().fold(index, |i, e| match e {
             Measure::Event(event) => {
+                println!("length multiplier: {}", length_multiplier);
                 let max_event = MaxEvent {
-                    index: i,
+                    index: ((i - 1) as f32 * length_multiplier) as u32 + 1,
                     event: event.clone(),
                 };
                 let new_i = event.advance(i, length);
                 out.push(max_event);
                 new_i + 1
             }
-            Group(xs) => Measure::max_event(subdivision, value, out, i, xs),
+            Group(xs) => Measure::max_event(subdivision, value, out, i, xs, length_multiplier),
         })
     }
 

@@ -3,9 +3,8 @@ mod line;
 
 use crate::error::Error;
 use crate::line::MyHelper;
-use battito_lib::interpreter::{interpret, RunConfig};
+use battito_lib::interpreter::interpret;
 use battito_lib::max::Payload;
-use battito_lib::SUBDIVISION_DEFAULT;
 use nannou_osc as osc;
 use nannou_osc::rosc::OscMessage;
 use nannou_osc::{Connected, Sender};
@@ -39,9 +38,6 @@ fn main() {
         host: "127.0.0.1".to_string(),
         port: 1234,
     };
-    let run_config = RunConfig {
-        subdivision: SUBDIVISION_DEFAULT,
-    };
     let sender = config.sender();
     let terminal_config = rustyline::config::Config::builder()
         .history_ignore_space(true)
@@ -62,7 +58,7 @@ fn main() {
         // println!("No previous history.");
     }
     loop {
-        match run(&mut editor, &p, &sender, &run_config) {
+        match run(&mut editor, &p, &sender) {
             Ok(code) => {
                 if code == 0 {
                     break;
@@ -74,17 +70,12 @@ fn main() {
     editor.save_history("history.txt").unwrap();
 }
 
-fn run<T: Helper>(
-    editor: &mut Editor<T>,
-    prompt: &str,
-    sender: &Sender<Connected>,
-    run_config: &RunConfig,
-) -> Result<usize, Error> {
+fn run<T: Helper>(editor: &mut Editor<T>, prompt: &str, sender: &Sender<Connected>) -> Result<usize, Error> {
     let readline = editor.readline(&prompt);
     match readline {
         Ok(line) => {
             editor.add_history_entry(line.as_str());
-            let payload = interpret(&line, run_config)?;
+            let payload = interpret(&line)?;
             let packet = to_osc_message(&payload)?;
 
             sender.send(packet).map_err(Error::from)

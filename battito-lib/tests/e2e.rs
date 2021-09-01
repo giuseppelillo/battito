@@ -2,15 +2,10 @@
 mod tests {
     use battito_lib::error::Error;
     use battito_lib::interpreter::interpret;
-    use battito_lib::interpreter::RunConfig;
     use battito_lib::max::Payload;
-    use battito_lib::SUBDIVISION_DEFAULT;
 
     fn run(input: &str) -> Result<Payload, Error> {
-        let run_config = RunConfig {
-            subdivision: SUBDIVISION_DEFAULT,
-        };
-        interpret(input, &run_config)
+        interpret(input)
     }
 
     fn test(expected: &Result<Payload, Error>, out: &Result<Payload, Error>) {

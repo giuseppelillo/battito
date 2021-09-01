@@ -16,7 +16,7 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{alphanumeric1, char, digit1},
-    combinator::map,
+    combinator::{map, opt},
     multi::separated_list0,
     sequence::{preceded, terminated, tuple},
     IResult,
@@ -99,11 +99,16 @@ pub(crate) fn inner_parser_group(input: &str) -> IResult<&str, ParsedMeasure> {
 
 pub(crate) fn parser(input: &str) -> IResult<&str, ParsedSequence> {
     map(
-        tuple((alphanumeric1, preceded(tag(" $ "), parser_measures))),
-        |(target, parsed)| ParsedSequence {
+        tuple((
+            alphanumeric1,
+            preceded(tag(" $ "), parser_measures),
+            opt(preceded(tag(" / "), digit1)),
+        )),
+        |(target, parsed, length)| ParsedSequence {
             target: target.to_string(),
             measures: parsed.0,
             pattern: parsed.1.to_string(),
+            length: length.map(|s| s.parse().unwrap()),
         },
     )(input)
 }

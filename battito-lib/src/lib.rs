@@ -2,6 +2,7 @@ mod display;
 pub mod error;
 pub mod euclidean;
 pub mod expansion;
+mod generators;
 pub mod interpreter;
 pub mod max;
 mod measure;
@@ -13,4 +14,4 @@ pub mod replicated;
 pub mod sequence;
 mod utils;
 
-pub const SUBDIVISION_DEFAULT: u32 = 1920;
+pub const SUBDIVISION: u32 = 1920;

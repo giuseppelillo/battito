@@ -2,5 +2,4 @@
 members = [
     "battito-lib",
     "battito-app",
-    "battito-web",
 ]

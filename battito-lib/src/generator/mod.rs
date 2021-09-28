@@ -22,7 +22,7 @@ impl Iterator for Harmonic {
     }
 }
 
-fn g(n: u8) -> u8 {
+pub fn g(n: u8) -> u8 {
     if n == 0 {
         0
     } else {
@@ -30,7 +30,7 @@ fn g(n: u8) -> u8 {
     }
 }
 
-fn h(n: u8) -> u8 {
+pub fn h(n: u8) -> u8 {
     if n == 0 {
         0
     } else {

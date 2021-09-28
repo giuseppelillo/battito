@@ -1,23 +1,15 @@
-use crate::parsed_measure::{ParsedMeasure, Single};
+use crate::pattern::parser::parsed_measure::{ParsedMeasure, Single};
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct Event {
+pub struct ParsedEvent {
     pub value: String,
     pub probability: u32, // [0, 100]
 }
 
-impl Event {
-    pub fn advance(&self, index: u32, length: u32) -> u32 {
-        let mut i = index;
-        for _ in 1..length {
-            i = i + 1;
-        }
-        i
-    }
-
+impl ParsedEvent {
     pub fn empty() -> Self {
-        Event {
+        ParsedEvent {
             value: "0".to_string(),
             probability: 0,
         }
@@ -40,7 +32,7 @@ impl Alternate {
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum PrimitiveGroup {
-    Single(Event),
+    Single(ParsedEvent),
     Group(Vec<PrimitiveGroup>),
 }
 

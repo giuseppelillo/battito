@@ -1,13 +1,14 @@
-use crate::error::EuclideanError::{NGreaterThanM, RGreaterEqualThanM};
-use crate::error::{Error, ParsingError};
-use crate::expansion::Expansion;
-use crate::parsed_measure::{ParsedMeasure, Single};
-use crate::parser::euclidean;
-use crate::primitives::Alternate;
-use crate::primitives::{Event, PrimitiveGroup};
-use crate::utils::lcm_vec;
+use crate::pattern::error::EuclideanError::{NGreaterThanM, RGreaterEqualThanM};
+use crate::pattern::error::{Error, ParsingError};
+// use crate::pattern::parser::expansion::Expansion;
+use crate::pattern::parser::euclidean;
+use crate::pattern::parser::parsed_measure::{ParsedMeasure, Single};
+use crate::pattern::parser::primitives::{Alternate, ParsedEvent, PrimitiveGroup};
+use crate::pattern::utils::lcm_vec;
 use nom::IResult;
 use std::collections::VecDeque;
+
+use super::Expansion;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum EuclideanPrimitive {
@@ -94,7 +95,7 @@ impl Euclidean {
             remainders: &Vec<u32>,
         ) -> () {
             match level {
-                -1 => pattern.push_back(PrimitiveGroup::Single(Event::empty())),
+                -1 => pattern.push_back(PrimitiveGroup::Single(ParsedEvent::empty())),
                 -2 => pattern.push_back(euclidean.value.clone()),
                 _ => {
                     for _ in 0..counts[level as usize] {
@@ -110,7 +111,7 @@ impl Euclidean {
         build(self, level, &counts, &mut pattern, &remainders);
         let index_first_one = pattern
             .iter()
-            .position(|x| *x != PrimitiveGroup::Single(Event::empty()))
+            .position(|x| *x != PrimitiveGroup::Single(ParsedEvent::empty()))
             .unwrap();
 
         pattern.rotate_left(index_first_one);
@@ -177,13 +178,15 @@ impl Expansion for Euclidean {
 
 #[cfg(test)]
 mod tests {
-    use crate::euclidean::{Euclidean, EuclideanPrimitive};
-    use crate::primitives::{Event, PrimitiveGroup};
+    use crate::pattern::parser::{
+        expansion::euclidean::{Euclidean, EuclideanPrimitive},
+        primitives::{ParsedEvent, PrimitiveGroup},
+    };
 
     #[test]
     fn expansion() {
         let e = Euclidean {
-            value: PrimitiveGroup::Single(Event {
+            value: PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -194,7 +197,7 @@ mod tests {
         let out = e.expand_alternate();
         let expected = vec![
             Euclidean {
-                value: PrimitiveGroup::Single(Event {
+                value: PrimitiveGroup::Single(ParsedEvent {
                     value: "x".to_string(),
                     probability: 100,
                 }),
@@ -203,7 +206,7 @@ mod tests {
                 r: EuclideanPrimitive::Single(0),
             },
             Euclidean {
-                value: PrimitiveGroup::Single(Event {
+                value: PrimitiveGroup::Single(ParsedEvent {
                     value: "x".to_string(),
                     probability: 100,
                 }),
@@ -212,7 +215,7 @@ mod tests {
                 r: EuclideanPrimitive::Single(1),
             },
             Euclidean {
-                value: PrimitiveGroup::Single(Event {
+                value: PrimitiveGroup::Single(ParsedEvent {
                     value: "x".to_string(),
                     probability: 100,
                 }),
@@ -221,7 +224,7 @@ mod tests {
                 r: EuclideanPrimitive::Single(2),
             },
             Euclidean {
-                value: PrimitiveGroup::Single(Event {
+                value: PrimitiveGroup::Single(ParsedEvent {
                     value: "x".to_string(),
                     probability: 100,
                 }),
@@ -230,7 +233,7 @@ mod tests {
                 r: EuclideanPrimitive::Single(0),
             },
             Euclidean {
-                value: PrimitiveGroup::Single(Event {
+                value: PrimitiveGroup::Single(ParsedEvent {
                     value: "x".to_string(),
                     probability: 100,
                 }),
@@ -239,7 +242,7 @@ mod tests {
                 r: EuclideanPrimitive::Single(1),
             },
             Euclidean {
-                value: PrimitiveGroup::Single(Event {
+                value: PrimitiveGroup::Single(ParsedEvent {
                     value: "x".to_string(),
                     probability: 100,
                 }),
@@ -254,7 +257,7 @@ mod tests {
     #[test]
     fn transformation() {
         let e = Euclidean {
-            value: PrimitiveGroup::Single(Event {
+            value: PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -263,35 +266,35 @@ mod tests {
             r: EuclideanPrimitive::Single(0),
         };
         let expected = Ok(PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
@@ -299,7 +302,7 @@ mod tests {
         assert_eq!(expected, e.to_primitive_group());
 
         let e = Euclidean {
-            value: PrimitiveGroup::Single(Event {
+            value: PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -308,19 +311,19 @@ mod tests {
             r: EuclideanPrimitive::Single(0),
         };
         let expected = Ok(PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
@@ -328,7 +331,7 @@ mod tests {
         assert_eq!(expected, e.to_primitive_group());
 
         let e = Euclidean {
-            value: PrimitiveGroup::Single(Event {
+            value: PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -337,19 +340,19 @@ mod tests {
             r: EuclideanPrimitive::Single(0),
         };
         let expected = Ok(PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -357,7 +360,7 @@ mod tests {
         assert_eq!(expected, e.to_primitive_group());
 
         let e = Euclidean {
-            value: PrimitiveGroup::Single(Event {
+            value: PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -366,35 +369,35 @@ mod tests {
             r: EuclideanPrimitive::Single(0),
         };
         let expected = Ok(PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -406,16 +409,16 @@ mod tests {
     fn transformation_nested() {
         let value = PrimitiveGroup::Group(vec![
             PrimitiveGroup::Group(vec![
-                PrimitiveGroup::Single(Event {
+                PrimitiveGroup::Single(ParsedEvent {
                     value: "a".to_string(),
                     probability: 114,
                 }),
-                PrimitiveGroup::Single(Event {
+                PrimitiveGroup::Single(ParsedEvent {
                     value: "ll".to_string(),
                     probability: 63,
                 }),
             ]),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "b".to_string(),
                 probability: 100,
             }),
@@ -428,12 +431,12 @@ mod tests {
         };
         let expected = Ok(PrimitiveGroup::Group(vec![
             value.clone(),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
             value.clone(),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
@@ -444,7 +447,7 @@ mod tests {
     #[test]
     fn transformation_rotation() {
         let e = Euclidean {
-            value: PrimitiveGroup::Single(Event {
+            value: PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -453,35 +456,35 @@ mod tests {
             r: EuclideanPrimitive::Single(1),
         };
         let expected = Ok(PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -489,7 +492,7 @@ mod tests {
         assert_eq!(expected, e.to_primitive_group());
 
         let e = Euclidean {
-            value: PrimitiveGroup::Single(Event {
+            value: PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -498,19 +501,19 @@ mod tests {
             r: EuclideanPrimitive::Single(2),
         };
         let expected = Ok(PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "0".to_string(),
                 probability: 0,
             }),
@@ -518,7 +521,7 @@ mod tests {
         assert_eq!(expected, e.to_primitive_group());
 
         let e = Euclidean {
-            value: PrimitiveGroup::Single(Event {
+            value: PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
@@ -527,19 +530,19 @@ mod tests {
             r: EuclideanPrimitive::Single(3),
         };
         let expected = Ok(PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "x".to_string(),
                 probability: 100,
             }),

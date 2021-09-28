@@ -2,102 +2,85 @@ mod error;
 mod line;
 
 use crate::error::Error;
-use crate::line::MyHelper;
-use battito_lib::interpreter::interpret;
-use battito_lib::max::Payload;
+use battito_lib::pattern::pattern::Pattern;
+use battito_lib::pattern::{transform, OutputFormat};
 use nannou_osc as osc;
 use nannou_osc::rosc::OscMessage;
+use nannou_osc::rosc::OscType;
 use nannou_osc::{Connected, Sender};
-use rustyline::completion::FilenameCompleter;
-use rustyline::error::ReadlineError;
-use rustyline::highlight::MatchingBracketHighlighter;
-use rustyline::hint::HistoryHinter;
-use rustyline::validate::MatchingBracketValidator;
-use rustyline::{ColorMode, EditMode, Editor, Helper};
 
 pub struct Config {
     host: String,
-    port: i32,
+    sender_port: u16,
+    receiver_port: u16,
 }
 
 impl Config {
-    fn address(&self) -> String {
-        format!("{}:{}", self.host, self.port)
-    }
-
     pub fn sender(&self) -> Sender<Connected> {
         osc::sender()
             .expect("Could not bind to default socket")
-            .connect(&self.address())
+            .connect(format!("{}:{}", self.host, self.sender_port))
             .expect("Could not connect to socket at address")
     }
+
+    pub fn receiver(&self) -> Receiver {
+        osc::receiver(self.receiver_port).expect("Could not bind to default socket")
+    }
 }
 
-fn main() {
+use osc::Receiver;
+use structopt::StructOpt;
+
+/// A basic example
+#[derive(StructOpt, Debug)]
+#[structopt(name = "basic")]
+struct Opt {
+    // #[structopt(short, long)]
+    // pattern: String,
+    #[structopt(short, long)]
+    subdivision: u32,
+}
+
+fn main() -> std::io::Result<()> {
+    let opt = Opt::from_args();
     let config = Config {
         host: "127.0.0.1".to_string(),
-        port: 1234,
+        sender_port: 1234,
+        receiver_port: 1235,
     };
     let sender = config.sender();
-    let terminal_config = rustyline::config::Config::builder()
-        .history_ignore_space(true)
-        .edit_mode(EditMode::Vi)
-        .color_mode(ColorMode::Enabled)
-        .build();
-    let p = ">> ".to_string();
-    let helper = MyHelper {
-        highlighter: MatchingBracketHighlighter::new(),
-        colored_prompt: format!("\x1b[1;31m{}\x1b[0m", p),
-        completer: FilenameCompleter::new(),
-        validator: MatchingBracketValidator::new(),
-        hinter: HistoryHinter {},
-    };
-    let mut editor = Editor::with_config(terminal_config);
-    editor.set_helper(Some(helper));
-    if editor.load_history("history.txt").is_err() {
-        // println!("No previous history.");
-    }
+    let receiver = config.receiver();
     loop {
-        match run(&mut editor, &p, &sender) {
-            Ok(code) => {
-                if code == 0 {
-                    break;
-                }
-            }
-            Err(e) => println!("{:?}", e),
-        }
-    }
-    editor.save_history("history.txt").unwrap();
-}
+        let (p, _) = receiver.recv().unwrap();
 
-fn run<T: Helper>(editor: &mut Editor<T>, prompt: &str, sender: &Sender<Connected>) -> Result<usize, Error> {
-    let readline = editor.readline(&prompt);
-    match readline {
-        Ok(line) => {
-            editor.add_history_entry(line.as_str());
-            let payload = interpret(&line)?;
-            let packet = to_osc_message(&payload)?;
-
-            sender.send(packet).map_err(Error::from)
-        }
-        Err(ReadlineError::Interrupted) => {
-            // println!("CTRL-C");
-            Ok(0)
-        }
-        Err(ReadlineError::Eof) => {
-            // println!("CTRL-D");
-            Ok(0)
-        }
-        Err(err) => {
-            println!("Error: {:?}", err);
-            Err(Error::InputError)
-        }
+        println!("{:?}", p);
+        let (address, arg) = match p {
+            osc::Packet::Message(m) => (m.addr, m.args.unwrap()[0].clone()),
+            osc::Packet::Bundle(b) => match b.content[0].clone() {
+                osc::rosc::OscPacket::Message(m) => (m.addr, m.args.unwrap()[0].clone()),
+                _ => panic!(),
+            },
+            _ => panic!(),
+        };
+        let input = match arg {
+            OscType::String(s) => s,
+            _ => panic!(),
+        };
+        let pattern = transform(&input, Some(opt.subdivision)).unwrap();
+        let steps = pattern.format_steps(OutputFormat::Max);
+        let osc_message = to_osc_message(address, pattern, steps).unwrap();
+        println!("{:?}", osc_message);
+        sender.send(osc_message).map_err(Error::from);
     }
 }
 
-fn to_osc_message(payload: &Payload) -> Result<OscMessage, Error> {
+fn to_osc_message(address: String, pattern: Pattern, steps: String) -> Result<OscMessage, Error> {
     Ok(OscMessage {
-        addr: serde_json::to_string(payload)?,
-        args: None,
+        addr: address,
+        args: Some(vec![
+            OscType::Int(pattern.length as i32),
+            OscType::Int(pattern.subdivision as i32),
+            OscType::String(steps),
+        ]),
     })
 }

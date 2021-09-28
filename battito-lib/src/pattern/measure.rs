@@ -1,10 +1,23 @@
-use crate::measure::Measure::Group;
-use crate::primitives::Event;
-use crate::utils::lcm;
-use crate::{
-    max::{MaxEvent, Pattern},
-    SUBDIVISION,
-};
+use crate::pattern::measure::Measure::Group;
+use crate::pattern::pattern::{Pattern, TimedEvent};
+use crate::pattern::utils::lcm;
+use serde::Serialize;
+
+#[derive(Debug, PartialEq, Clone, Serialize)]
+pub struct Event {
+    pub value: String,
+    pub probability: u32, // [0, 100]
+}
+
+impl Event {
+    pub fn advance(&self, index: u32, length: u32) -> u32 {
+        let mut i = index;
+        for _ in 1..length {
+            i = i + 1;
+        }
+        i
+    }
+}
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Measure {
@@ -20,25 +33,26 @@ impl Measure {
         }
     }
 
-    pub fn to_pattern(&self, start: u32, length_multiplier: f32) -> Pattern {
-        let max_events = match self {
-            Measure::Event(event) => vec![MaxEvent {
+    pub fn timed_events(&self, start: u32, length_multiplier: f32, subdivision: u32) -> Vec<TimedEvent> {
+        let timed_events = match self {
+            Measure::Event(event) if event.probability != 0 => vec![TimedEvent {
                 index: 1,
                 event: event.clone(),
             }],
             Measure::Group(measures) => {
-                let mut vec: Vec<MaxEvent> = Vec::new();
-                Measure::max_event(SUBDIVISION, 1, &mut vec, start, measures, length_multiplier);
+                let mut vec: Vec<TimedEvent> = Vec::new();
+                Measure::timed_event(subdivision, 1, &mut vec, start, measures, length_multiplier);
                 vec
             }
+            _ => vec![],
         };
-        Pattern(max_events)
+        timed_events
     }
 
-    fn max_event(
+    fn timed_event(
         subdivision: u32,
         acc_value: u32,
-        out: &mut Vec<MaxEvent>,
+        out: &mut Vec<TimedEvent>,
         index: u32,
         elements: &Vec<Measure>,
         length_multiplier: f32,
@@ -46,17 +60,18 @@ impl Measure {
         let value = acc_value * elements.len() as u32;
         let length = subdivision / value;
         elements.iter().fold(index, |i, e| match e {
-            Measure::Event(event) => {
-                println!("length multiplier: {}", length_multiplier);
-                let max_event = MaxEvent {
+            Measure::Event(event) if event.probability != 0 => {
+                // println!("length multiplier: {}", length_multiplier);
+                let timed_event = TimedEvent {
                     index: ((i - 1) as f32 * length_multiplier) as u32 + 1,
                     event: event.clone(),
                 };
                 let new_i = event.advance(i, length);
-                out.push(max_event);
+                out.push(timed_event);
                 new_i + 1
             }
-            Group(xs) => Measure::max_event(subdivision, value, out, i, xs, length_multiplier),
+            Measure::Event(event) => event.advance(i, length) + 1,
+            Group(xs) => Measure::timed_event(subdivision, value, out, i, xs, length_multiplier),
         })
     }
 

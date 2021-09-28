@@ -1,7 +1,12 @@
-use crate::error::Error;
-use crate::parsed_measure::ParsedMeasure;
+use crate::pattern::error::Error;
 use nom::combinator::map_res;
 use nom::IResult;
+
+use super::parsed_measure::ParsedMeasure;
+
+pub mod euclidean;
+pub mod repeated;
+pub mod replicated;
 
 pub trait Expansion {
     fn expand(&self) -> Result<Vec<ParsedMeasure>, Error>;

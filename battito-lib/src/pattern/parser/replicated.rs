@@ -1,17 +1,17 @@
-use crate::error::Error;
-use crate::euclidean::Euclidean;
-use crate::expansion::Expansion;
-use crate::parsed_measure::ParsedMeasure;
-use crate::parser::alternate::parser_alternate;
-use crate::parser::{inner_parser_group, parser_event};
-use crate::replicated::Replicated;
+use super::expansion::euclidean::Euclidean;
+use super::expansion::replicated::Replicated;
+use super::expansion::Expansion;
+use super::parsed_measure::ParsedMeasure;
+use crate::pattern::error::Error;
+use crate::pattern::parser::alternate::parser_alternate;
+use crate::pattern::parser::{inner_parser_group, parser_event};
 use nom::branch::alt;
 use nom::character::complete::{char, digit1};
 use nom::combinator::{map, map_res};
 use nom::sequence::{preceded, tuple};
 use nom::IResult;
 
-pub fn parser(input: &str) -> IResult<&str, Replicated> {
+pub(crate) fn parser(input: &str) -> IResult<&str, Replicated> {
     map_res(
         tuple((inner_parser, preceded(char('!'), digit1))),
         |(pm, digit)| -> Result<Replicated, Error> {

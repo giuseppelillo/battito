@@ -1,16 +1,17 @@
-use crate::measure::Measure;
-use crate::primitives::{Alternate, Event};
-use crate::utils::lcm_vec;
+use crate::pattern::measure::{self, Measure};
+use crate::pattern::utils::lcm_vec;
+
+use super::primitives::{Alternate, ParsedEvent};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Single {
-    Event(Event),
+    Event(ParsedEvent),
     Alternate(Alternate),
 }
 
 impl Single {
     pub fn empty() -> Self {
-        Single::Event(Event {
+        Single::Event(ParsedEvent {
             value: "0".to_string(),
             probability: 0,
         })
@@ -75,7 +76,10 @@ impl ParsedMeasure {
 
     fn out(parsed_measure: ParsedMeasure) -> Measure {
         match parsed_measure {
-            Self::Single(Single::Event(n)) => Measure::Event(n.clone()),
+            Self::Single(Single::Event(n)) => Measure::Event(measure::Event {
+                value: n.value.clone(),
+                probability: n.probability,
+            }),
             Self::Group(x) => {
                 let nested: Vec<Measure> = x.iter().map(|b| Self::out(b.clone())).collect();
                 Measure::Group(nested)
@@ -114,7 +118,7 @@ impl ParsedMeasure {
                     ("~", _) => ("0", Some(0)),
                     (v, p) => (v, p),
                 };
-                Self::Single(Single::Event(Event {
+                Self::Single(Single::Event(ParsedEvent {
                     value: value_parsed.to_string(),
                     probability: probability.unwrap_or(100),
                 }))
@@ -129,7 +133,7 @@ impl ParsedMeasure {
             "~" => ("0", 0),
             p => (p, 100),
         };
-        Self::Single(Single::Event(Event {
+        Self::Single(Single::Event(ParsedEvent {
             value: value_parsed.to_string(),
             probability,
         }))
@@ -140,7 +144,7 @@ impl ParsedMeasure {
             "~" => ("0", 0),
             p => (p, probability),
         };
-        Self::Single(Single::Event(Event {
+        Self::Single(Single::Event(ParsedEvent {
             value: value_parsed.to_string(),
             probability: prob,
         }))
@@ -225,7 +229,10 @@ impl Polymetric {
 
     fn out(parsed_measure: ParsedMeasure) -> Measure {
         match parsed_measure {
-            ParsedMeasure::Single(Single::Event(n)) => Measure::Event(n.clone()),
+            ParsedMeasure::Single(Single::Event(n)) => Measure::Event(measure::Event {
+                value: n.value.clone(),
+                probability: n.probability,
+            }),
             ParsedMeasure::Group(x) => {
                 let nested: Vec<Measure> = x.iter().map(|b| Self::out(b.clone())).collect();
                 Measure::Group(nested)

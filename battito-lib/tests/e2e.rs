@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use battito_lib::error::Error;
-    use battito_lib::interpreter::interpret;
-    use battito_lib::max::Payload;
+    use battito_lib::pattern::error::Error;
+    use battito_lib::pattern::interpreter::interpret;
+    use battito_lib::pattern::pattern::Payload;
 
     fn run(input: &str) -> Result<Payload, Error> {
         interpret(input)

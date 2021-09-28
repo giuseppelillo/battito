@@ -1,7 +1,7 @@
-use crate::error::Error;
-use crate::euclidean::{Euclidean, EuclideanPrimitive};
-use crate::parser::alternate::parser_primitive;
-use crate::primitives::PrimitiveGroup;
+use super::alternate::parser_primitive;
+use super::expansion::euclidean::{Euclidean, EuclideanPrimitive};
+use super::primitives::PrimitiveGroup;
+use crate::pattern::error::Error;
 use nom::branch::alt;
 use nom::character::complete::{char, digit1};
 use nom::combinator::{map, map_res};
@@ -9,7 +9,7 @@ use nom::multi::separated_list1;
 use nom::sequence::{preceded, terminated, tuple};
 use nom::IResult;
 
-pub fn parser_euclidean(input: &str) -> IResult<&str, Euclidean> {
+pub(crate) fn parser_euclidean(input: &str) -> IResult<&str, Euclidean> {
     map_res(tuple((parser_value, parser_numbers)), |value| {
         Euclidean::create(value.0, value.1 .0, value.1 .1, value.1 .2)
     })(input)

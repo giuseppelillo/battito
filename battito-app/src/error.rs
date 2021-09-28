@@ -20,8 +20,8 @@ impl From<CommunicationError> for Error {
     }
 }
 
-impl From<battito_lib::error::Error> for Error {
-    fn from(_: battito_lib::error::Error) -> Self {
+impl From<battito_lib::pattern::error::Error> for Error {
+    fn from(_: battito_lib::pattern::error::Error) -> Self {
         Error::ParsingError
     }
 }

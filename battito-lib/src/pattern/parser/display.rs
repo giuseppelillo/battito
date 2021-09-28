@@ -1,7 +1,8 @@
 use std::io::Write;
 
-use crate::parsed_measure::{Parsed, ParsedMeasure, Single};
-use crate::primitives::{Event, PrimitiveGroup};
+use crate::pattern::parser::parsed_measure::{Parsed, ParsedMeasure, Single};
+
+use super::primitives::{ParsedEvent, PrimitiveGroup};
 const TAB: &str = "    ";
 
 fn inden(level: u8) -> String {
@@ -16,7 +17,7 @@ pub trait Fmt {
     fn fmt(&self, level: u8, b: &mut impl Write) -> std::io::Result<()>;
 }
 
-impl Fmt for Event {
+impl Fmt for ParsedEvent {
     fn fmt(&self, level: u8, buf: &mut impl Write) -> std::io::Result<()> {
         write!(buf, "{}Event: {} - {},\n", inden(level), self.value, self.probability)
     }
@@ -85,25 +86,25 @@ impl Fmt for Parsed {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
+    use crate::pattern::parser::{
         display::Fmt,
         parsed_measure::Single,
-        primitives::{Alternate, Event, PrimitiveGroup},
+        primitives::{Alternate, ParsedEvent, PrimitiveGroup},
     };
 
     #[test]
     fn primitive() {
         let a = PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "10".to_string(),
                 probability: 100,
             }),
             PrimitiveGroup::Group(vec![
-                PrimitiveGroup::Single(Event {
+                PrimitiveGroup::Single(ParsedEvent {
                     value: "20".to_string(),
                     probability: 100,
                 }),
-                PrimitiveGroup::Single(Event {
+                PrimitiveGroup::Single(ParsedEvent {
                     value: "30".to_string(),
                     probability: 100,
                 }),
@@ -117,16 +118,16 @@ mod tests {
     #[test]
     fn single() {
         let p = PrimitiveGroup::Group(vec![
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "10".to_string(),
                 probability: 100,
             }),
             PrimitiveGroup::Group(vec![
-                PrimitiveGroup::Single(Event {
+                PrimitiveGroup::Single(ParsedEvent {
                     value: "20".to_string(),
                     probability: 100,
                 }),
-                PrimitiveGroup::Single(Event {
+                PrimitiveGroup::Single(ParsedEvent {
                     value: "30".to_string(),
                     probability: 100,
                 }),
@@ -134,7 +135,7 @@ mod tests {
         ]);
         let a = Single::Alternate(Alternate(vec![
             p,
-            PrimitiveGroup::Single(Event {
+            PrimitiveGroup::Single(ParsedEvent {
                 value: "50".to_string(),
                 probability: 100,
             }),

@@ -1,8 +1,9 @@
-use crate::error::Error;
-use crate::expansion::Expansion;
-use crate::parsed_measure::ParsedMeasure;
-use crate::parser::repeated;
+use crate::pattern::error::Error;
+use crate::pattern::parser::parsed_measure::ParsedMeasure;
+use crate::pattern::parser::repeated;
 use nom::IResult;
+
+use super::Expansion;
 
 pub struct Repeated {
     pub(crate) value: ParsedMeasure,

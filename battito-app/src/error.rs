@@ -2,32 +2,33 @@ use nannou_osc::CommunicationError;
 use std::io;
 
 #[derive(Debug)]
-pub enum Error {
+pub enum BattitoError {
     InputError,
     UDPError,
     ParsingError,
+    OSCPacketError,
 }
 
-impl From<io::Error> for Error {
+impl From<io::Error> for BattitoError {
     fn from(_: io::Error) -> Self {
-        Error::InputError
+        BattitoError::InputError
     }
 }
 
-impl From<CommunicationError> for Error {
+impl From<CommunicationError> for BattitoError {
     fn from(_: CommunicationError) -> Self {
-        Error::UDPError
+        BattitoError::UDPError
     }
 }
 
-impl From<battito_lib::pattern::error::Error> for Error {
+impl From<battito_lib::pattern::error::Error> for BattitoError {
     fn from(_: battito_lib::pattern::error::Error) -> Self {
-        Error::ParsingError
+        BattitoError::ParsingError
     }
 }
 
-impl From<serde_json::Error> for Error {
+impl From<serde_json::Error> for BattitoError {
     fn from(_: serde_json::Error) -> Self {
-        Error::InputError
+        BattitoError::InputError
     }
 }

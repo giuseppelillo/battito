@@ -1,5 +1,5 @@
 use crate::pattern::measure::Measure::Group;
-use crate::pattern::pattern::{Pattern, TimedEvent};
+use crate::pattern::pattern::TimedEvent;
 use crate::pattern::utils::lcm;
 use serde::Serialize;
 

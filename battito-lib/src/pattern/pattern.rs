@@ -1,6 +1,5 @@
 use crate::pattern::measure::Event;
 use serde::Serialize;
-use serde_json::json;
 
 use super::OutputFormat;
 

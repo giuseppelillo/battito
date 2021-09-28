@@ -1,13 +1,15 @@
 mod error;
 mod line;
 
-use crate::error::Error;
+use crate::error::BattitoError;
 use battito_lib::pattern::pattern::Pattern;
 use battito_lib::pattern::{transform, OutputFormat};
 use nannou_osc as osc;
 use nannou_osc::rosc::OscMessage;
 use nannou_osc::rosc::OscType;
 use nannou_osc::{Connected, Sender};
+use osc::Receiver;
+use structopt::StructOpt;
 
 pub struct Config {
     host: String,
@@ -28,15 +30,9 @@ impl Config {
     }
 }
 
-use osc::Receiver;
-use structopt::StructOpt;
-
-/// A basic example
 #[derive(StructOpt, Debug)]
 #[structopt(name = "basic")]
 struct Opt {
-    // #[structopt(short, long)]
-    // pattern: String,
     #[structopt(short, long)]
     subdivision: u32,
 }
@@ -51,36 +47,48 @@ fn main() -> std::io::Result<()> {
     let sender = config.sender();
     let receiver = config.receiver();
     loop {
-        let (p, _) = receiver.recv().unwrap();
-
-        println!("{:?}", p);
-        let (address, arg) = match p {
-            osc::Packet::Message(m) => (m.addr, m.args.unwrap()[0].clone()),
-            osc::Packet::Bundle(b) => match b.content[0].clone() {
-                osc::rosc::OscPacket::Message(m) => (m.addr, m.args.unwrap()[0].clone()),
-                _ => panic!(),
-            },
-            _ => panic!(),
-        };
-        let input = match arg {
-            OscType::String(s) => s,
-            _ => panic!(),
-        };
-        let pattern = transform(&input, Some(opt.subdivision)).unwrap();
-        let steps = pattern.format_steps(OutputFormat::Max);
-        let osc_message = to_osc_message(address, pattern, steps).unwrap();
-        println!("{:?}", osc_message);
-        sender.send(osc_message).map_err(Error::from);
+        match process(&receiver, &sender, &opt) {
+            Ok(sent_packet) => println!("{:?}", sent_packet),
+            Err(error) => println!("{:?}", error),
+        }
     }
 }
 
-fn to_osc_message(address: String, pattern: Pattern, steps: String) -> Result<OscMessage, Error> {
-    Ok(OscMessage {
+fn process(receiver: &Receiver, sender: &Sender<Connected>, opt: &Opt) -> Result<OscMessage, BattitoError> {
+    let (packet, _) = receiver.recv()?;
+    let (input_pattern, osc_address) = parse_osc(packet)?;
+    let pattern = transform(&input_pattern, Some(opt.subdivision))?;
+    let steps = pattern.format_steps(OutputFormat::Max);
+    let osc_message = to_osc_message(osc_address, pattern, steps);
+    let _ = sender.send(osc_message.clone()).map_err(BattitoError::from)?;
+
+    Ok(osc_message)
+}
+
+fn parse_osc(packet: osc::Packet) -> Result<(String, String), BattitoError> {
+    let (osc_address, args) = match packet {
+        osc::Packet::Message(OscMessage { addr, args: Some(args) }) => Ok((addr, args)),
+        osc::Packet::Bundle(b) => match &b.content[..] {
+            [osc::rosc::OscPacket::Message(OscMessage { addr, args: Some(args) })] => Ok((addr.clone(), args.clone())),
+            _ => Err(BattitoError::OSCPacketError),
+        },
+        _ => Err(BattitoError::OSCPacketError),
+    }?;
+    let input_pattern = match &args[..] {
+        [OscType::String(s)] => Ok(s.clone()),
+        _ => Err(BattitoError::OSCPacketError),
+    }?;
+
+    Ok((input_pattern, osc_address))
+}
+
+fn to_osc_message(address: String, pattern: Pattern, steps: String) -> OscMessage {
+    OscMessage {
         addr: address,
         args: Some(vec![
             OscType::Int(pattern.length as i32),
             OscType::Int(pattern.subdivision as i32),
             OscType::String(steps),
         ]),
-    })
+    }
 }

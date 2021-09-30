@@ -52,6 +52,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "battito-max"
+version = "0.1.0"
+dependencies = [
+ "battito-lib",
+ "libc",
+]
+
+[[package]]
 name = "bitflags"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

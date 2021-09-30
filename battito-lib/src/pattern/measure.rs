@@ -6,7 +6,7 @@ use serde::Serialize;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Event {
     pub value: String,
-    pub probability: u32, // [0, 100]
+    pub probability: u8, // [0, 100]
 }
 
 impl Event {
@@ -16,6 +16,13 @@ impl Event {
             i = i + 1;
         }
         i
+    }
+
+    pub fn empty() -> Event {
+        Event {
+            value: "".into(),
+            probability: 0,
+        }
     }
 }
 

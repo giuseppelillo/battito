@@ -45,4 +45,15 @@ impl Pattern {
             }
         }
     }
+
+    pub fn fill(&self) -> Vec<Event> {
+        let buffer_length = (self.length * self.subdivision) as usize;
+        let mut filled_steps: Vec<Event> = vec![Event::empty(); buffer_length];
+
+        self.steps.iter().for_each(|te| {
+            filled_steps[(te.index - 1) as usize] = te.event.clone();
+        });
+
+        filled_steps
+    }
 }

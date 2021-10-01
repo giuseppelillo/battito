@@ -10,8 +10,14 @@ pub struct Event {
     pub probability: u8, // [0, 100]
 }
 
+#[repr(C)]
+pub struct Pattern {
+    pub events: *const Event,
+    pub length: u32,
+}
+
 #[no_mangle]
-pub extern "C" fn transform(ptr: *const c_char, subdivision: u32) -> *const Event {
+pub extern "C" fn transform(ptr: *const c_char, subdivision: u32) -> Pattern {
     let cstr = unsafe { CStr::from_ptr(ptr) };
     let pattern = battito_lib::pattern::transform(cstr.to_str().unwrap(), Some(subdivision)).unwrap();
     let filled = pattern.fill();
@@ -26,5 +32,9 @@ pub extern "C" fn transform(ptr: *const c_char, subdivision: u32) -> *const Even
 
     let pointer = v.as_ptr();
     mem::forget(v);
-    pointer
+
+    Pattern {
+        events: pointer,
+        length: pattern.length
+    }
 }

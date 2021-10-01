@@ -3,4 +3,9 @@ struct event {
   uint8_t probability;
 };
 
-struct event* transform(char* input, uint32_t subdivision);
+struct pattern {
+  struct event* events;
+  uint32_t length;
+};
+
+struct pattern transform(char* input, uint32_t subdivision);

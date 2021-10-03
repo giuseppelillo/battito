@@ -46,8 +46,10 @@ impl Measure {
                 index: 1,
                 event: event.clone(),
             }],
+            Measure::Group(empty) if empty.is_empty() => vec![],
             Measure::Group(measures) => {
                 let mut vec: Vec<TimedEvent> = Vec::new();
+                println!("{:?}", &self);
                 Measure::timed_event(subdivision, 1, &mut vec, start, measures, length_multiplier);
                 vec
             }

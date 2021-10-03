@@ -56,4 +56,18 @@ impl Pattern {
 
         filled_steps
     }
+
+    pub fn empty(subdivision: u32) -> Pattern {
+        Pattern {
+            steps: vec![TimedEvent {
+                index: 1,
+                event: Event {
+                    value: "0".into(),
+                    probability: 0,
+                },
+            }],
+            length: 1,
+            subdivision,
+        }
+    }
 }

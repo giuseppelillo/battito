@@ -4,8 +4,9 @@
 
 int main (void) {
     char* a;
-    char input[] = "1?10 2?20 3?30 4?40";
+    char input[] = " ";
     struct event* buf;
-    buf = transform(input, 480);
-    printf("%d", buf[120].value);
+    struct pattern pattern = transform(input, 480);
+    printf("%d", pattern.events[120].value);
+    printf("%d", pattern.length);
 }

@@ -3,10 +3,9 @@
 #include "../src/battito_max.h"
 
 int main (void) {
-    char* a;
-    char input[] = " ";
+    char input[] = "1 2 3";
     struct event* buf;
     struct pattern pattern = transform(input, 480);
-    printf("%d", pattern.events[120].value);
-    printf("%d", pattern.length);
+    printf("%d\n", pattern.events[120].value);
+    printf("%d\n", pattern.length);
 }

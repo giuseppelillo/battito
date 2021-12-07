@@ -110,7 +110,7 @@ impl ParsedMeasure {
     }
 
     // Constructors
-    pub fn alternate(value: Vec<(&str, Option<u32>)>) -> Self {
+    pub fn alternate(value: Vec<(&str, Option<u8>)>) -> Self {
         let events: Vec<ParsedMeasure> = value
             .iter()
             .map(|value| {
@@ -139,7 +139,7 @@ impl ParsedMeasure {
         }))
     }
 
-    pub fn event_with_probability(value: &str, probability: u32) -> Self {
+    pub fn event_with_probability(value: &str, probability: u8) -> Self {
         let (value_parsed, prob) = match value {
             "~" => ("0", 0),
             p => (p, probability),

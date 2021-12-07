@@ -4,7 +4,7 @@ use serde::Serialize;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct ParsedEvent {
     pub value: String,
-    pub probability: u32, // [0, 100]
+    pub probability: u8, // [0, 100]
 }
 
 impl ParsedEvent {

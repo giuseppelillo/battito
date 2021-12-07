@@ -43,7 +43,7 @@ fn parser_event_with_prob(input: &str) -> IResult<&str, ParsedMeasure> {
     map_res(
         tuple((alphanumeric1, preceded(char('?'), digit1))),
         |(value, prob): (&str, &str)| -> Result<ParsedMeasure, Error> {
-            let prob_num: Result<u32, Error> = prob.parse().map_err(Error::from);
+            let prob_num: Result<u8, Error> = prob.parse().map_err(Error::from);
             Ok(ParsedMeasure::event_with_probability(value, prob_num?))
         },
     )(input)

@@ -17,6 +17,16 @@ pub struct TimedEvent {
 }
 
 impl TimedEvent {
+    pub fn new(index: u32, value: &str, probability: u8) -> Self {
+        TimedEvent {
+            index,
+            event: Event {
+                value: value.into(),
+                probability,
+            },
+        }
+    }
+
     pub fn max_format(&self) -> String {
         format!("{} {} {}", self.index, self.event.value, self.event.probability)
     }
@@ -43,6 +53,31 @@ impl Pattern {
                 // })
                 // .to_string()
             }
+        }
+    }
+
+    pub fn fill(&self) -> Vec<Event> {
+        let buffer_length = (self.length * self.subdivision) as usize;
+        let mut filled_steps: Vec<Event> = vec![Event::empty(); buffer_length];
+
+        self.steps.iter().for_each(|te| {
+            filled_steps[(te.index - 1) as usize] = te.event.clone();
+        });
+
+        filled_steps
+    }
+
+    pub fn empty(subdivision: u32) -> Pattern {
+        Pattern {
+            steps: vec![TimedEvent {
+                index: 1,
+                event: Event {
+                    value: "0".into(),
+                    probability: 0,
+                },
+            }],
+            length: 1,
+            subdivision,
         }
     }
 }

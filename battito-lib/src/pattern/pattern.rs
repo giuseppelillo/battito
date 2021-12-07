@@ -17,6 +17,16 @@ pub struct TimedEvent {
 }
 
 impl TimedEvent {
+    pub fn new(index: u32, value: &str, probability: u8) -> Self {
+        TimedEvent {
+            index,
+            event: Event {
+                value: value.into(),
+                probability,
+            },
+        }
+    }
+
     pub fn max_format(&self) -> String {
         format!("{} {} {}", self.index, self.event.value, self.event.probability)
     }

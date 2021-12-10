@@ -49,7 +49,6 @@ impl Measure {
             Measure::Group(empty) if empty.is_empty() => vec![],
             Measure::Group(measures) => {
                 let mut vec: Vec<TimedEvent> = Vec::new();
-                println!("{:?}", &self);
                 Measure::timed_event(subdivision, 1, &mut vec, start, measures, length_multiplier);
                 vec
             }
@@ -70,7 +69,6 @@ impl Measure {
         let length = subdivision / value;
         elements.iter().fold(index, |i, e| match e {
             Measure::Event(event) if event.probability != 0 => {
-                // println!("length multiplier: {}", length_multiplier);
                 let timed_event = TimedEvent {
                     index: ((i - 1) as f32 * length_multiplier) as u32 + 1,
                     event: event.clone(),

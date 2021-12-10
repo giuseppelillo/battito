@@ -48,7 +48,6 @@ impl Parsed {
 impl ParsedMeasure {
     // Transform this parsed measure into a vector of Measure
     pub fn to_measures(&self) -> Vec<Measure> {
-        // Self::expand_alternate(vec![self.clone()])
         let n = lcm_vec(&self.count_replications());
         // Create n copies of this ParsedMeasure
         let mut replicated: Vec<ParsedMeasure> = vec![self.clone(); n as usize];

@@ -9,6 +9,7 @@ use nannou_osc::rosc::OscMessage;
 use nannou_osc::rosc::OscType;
 use nannou_osc::{Connected, Sender};
 use osc::Receiver;
+use std::io;
 use structopt::StructOpt;
 
 pub struct Config {
@@ -35,6 +36,8 @@ impl Config {
 struct Opt {
     #[structopt(short, long)]
     subdivision: u32,
+    #[structopt(short, long)]
+    osc: Option<bool>,
 }
 
 fn main() -> std::io::Result<()> {
@@ -44,12 +47,24 @@ fn main() -> std::io::Result<()> {
         sender_port: 1234,
         receiver_port: 1235,
     };
-    let sender = config.sender();
-    let receiver = config.receiver();
     loop {
-        match process(&receiver, &sender, &opt) {
-            Ok(sent_packet) => println!("{:?}", sent_packet),
-            Err(error) => println!("{:?}", error),
+        match &opt.osc {
+            Some(true) => {
+                let sender = config.sender();
+                let receiver = config.receiver();
+                match process(&receiver, &sender, &opt) {
+                    Ok(sent_packet) => println!("{:?}", sent_packet),
+                    Err(error) => println!("{:?}", error),
+                }
+            }
+            _ => {
+                let mut buffer = String::new();
+                io::stdin().read_line(&mut buffer)?;
+                match process_stdin(buffer, &opt) {
+                    Ok(sent_packet) => println!("{:?}", sent_packet),
+                    Err(error) => println!("{:?}", error),
+                }
+            }
         }
     }
 }
@@ -63,6 +78,13 @@ fn process(receiver: &Receiver, sender: &Sender<Connected>, opt: &Opt) -> Result
     let _ = sender.send(osc_message.clone()).map_err(BattitoError::from)?;
 
     Ok(osc_message)
+}
+
+fn process_stdin(input: String, opt: &Opt) -> Result<String, BattitoError> {
+    let pattern = transform(&input, Some(opt.subdivision))?;
+    println!("{:#?}", pattern);
+    let steps = pattern.format_steps(OutputFormat::Max);
+    Ok(steps)
 }
 
 fn parse_osc(packet: osc::Packet) -> Result<(String, String), BattitoError> {

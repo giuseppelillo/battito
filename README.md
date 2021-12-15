@@ -3,5 +3,11 @@
 ## How to run it
 
 ```
-cargo run --bin battito-app
+cargo run -- --subdivision $SUBDIVISION
+```
+
+E.g.
+
+```
+cargo run -- --subdivision 1920
 ```

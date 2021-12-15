@@ -82,7 +82,6 @@ fn process(receiver: &Receiver, sender: &Sender<Connected>, opt: &Opt) -> Result
 
 fn process_stdin(input: String, opt: &Opt) -> Result<String, BattitoError> {
     let pattern = transform(&input, Some(opt.subdivision))?;
-    println!("{:#?}", pattern);
     let steps = pattern.format_steps(OutputFormat::Max);
     Ok(steps)
 }

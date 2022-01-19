@@ -5,6 +5,7 @@ use nom::IResult;
 use super::parsed_measure::ParsedMeasure;
 
 pub mod euclidean;
+pub mod generator;
 pub mod repeated;
 pub mod replicated;
 

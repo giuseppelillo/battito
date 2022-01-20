@@ -1,5 +1,7 @@
 # Battito
 
+Musical pattern language.
+
 ## Modules
 
 ### battito-lib

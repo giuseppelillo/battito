@@ -4,8 +4,9 @@ use nom::IResult;
 
 use super::parsed_measure::ParsedMeasure;
 
+pub mod binary_generator;
 pub mod euclidean;
-pub mod generator;
+pub mod harmonic_generator;
 pub mod repeated;
 pub mod replicated;
 

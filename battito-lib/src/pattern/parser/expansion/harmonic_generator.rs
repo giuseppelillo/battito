@@ -3,15 +3,13 @@ use crate::pattern::error::Error;
 use crate::pattern::parser::parsed_measure::{ParsedMeasure, Single};
 use crate::pattern::parser::primitives::ParsedEvent;
 use nom::{
-    branch::alt,
     bytes::complete::tag,
-    character::complete::{alphanumeric1, char, digit1},
-    combinator::{map, opt},
+    character::complete::{char, digit1},
+    combinator::map,
     multi::separated_list0,
-    sequence::{preceded, terminated, tuple},
+    sequence::{preceded, terminated},
     IResult,
 };
-// use nom::IResult;
 
 use super::Expansion;
 
@@ -39,7 +37,10 @@ impl Expansion for HarmonicGenerator {
     where
         Self: Sized,
     {
-        let x = preceded(tag("harmonic("), terminated(separated_list0(tag(","), digit1), char(')')));
+        let x = preceded(
+            tag("harmonic("),
+            terminated(separated_list0(tag(","), digit1), char(')')),
+        );
         map(x, |a: Vec<&str>| HarmonicGenerator {
             fundamental: a[0].parse().unwrap(),
             steps: a[1].parse().unwrap(),

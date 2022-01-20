@@ -7,7 +7,9 @@ pub(crate) mod primitives;
 mod repeated;
 mod replicated;
 
-use self::expansion::generator::HarmonicGenerator;
+use crate::generator::Binary;
+
+use self::expansion::harmonic_generator::HarmonicGenerator;
 use self::parsed_measure::{Parsed, ParsedMeasure, Polymetric};
 
 use super::error::{Error, ParsingError};
@@ -65,6 +67,7 @@ fn parser_single(input: &str) -> IResult<&str, ParsedMeasure> {
 fn parser_parsed_measure(input: &str) -> IResult<&str, Vec<ParsedMeasure>> {
     alt((
         HarmonicGenerator::parse,
+        Binary::parse,
         Repeated::parse,
         Replicated::parse,
         Euclidean::parse,

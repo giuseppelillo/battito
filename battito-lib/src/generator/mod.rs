@@ -22,6 +22,21 @@ impl Iterator for Harmonic {
     }
 }
 
+pub struct Binary {
+    pub number: u32,
+    pub length: u8,
+}
+
+impl Binary {
+    pub fn generate(&self) -> Vec<u32> {
+        format!("{:0>32b}", self.number)
+            .chars()
+            .map(|c| c.to_digit(10).unwrap())
+            .skip(32 - self.length as usize)
+            .collect()
+    }
+}
+
 pub fn g(n: u8) -> u8 {
     if n == 0 {
         0

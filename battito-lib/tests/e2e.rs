@@ -196,4 +196,35 @@ mod tests {
         // test("1 [2 4]?22 3 | 5 6", "1 [2?22 4?22] 3 | 5 6");
         // test("1 <2,4>?22 3 | 5 6", "1 2?22 3 | 1 4?22 3 | 5 6");
     }
+
+    #[test]
+    fn generator() {
+        test("harmonic(10,1)", "10");
+        test("harmonic(10,4)", "10 20 30 40");
+        test("harmonic(10,4) 127", "10 20 30 40 127");
+        test("[harmonic(10,4)] 127", "[10 20 30 40] 127");
+        test(
+            "{harmonic(10,4)}%5",
+            "10 20 30 40 10 | 20 30 40 10 20 | 30 40 10 20 30 | 40 10 20 30 40",
+        );
+        test("binary(146,8)", "0 ~ ~ 0 ~ ~ 0 ~");
+        test("binary(146,4)", "~ ~ 0 ~");
+        test("{binary(146,4)}%5", "~ ~ 0 ~ ~ | ~ 0 ~ ~ ~ | 0 ~ ~ ~ 0 | ~ ~ ~ 0 ~");
+    }
+
+    // use nom::{
+    //     branch::alt,
+    //     bytes::complete::tag,
+    //     character::complete::{alphanumeric1, char, digit1},
+    //     combinator::{map, opt},
+    //     multi::separated_list0,
+    //     sequence::{preceded, terminated, tuple},
+    //     IResult,
+    // };
+    // #[test]
+    // fn asd() {
+    //     let a: IResult<&str, &str> = preceded(tag("&&("), terminated(digit1, char(')')))("&&(1)");
+
+    //     println!("{:?}", a)
+    // }
 }
